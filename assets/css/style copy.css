@@ -208,8 +208,7 @@ html {
 .back-btn-hover {
 	background: rgba(255, 255, 255, 0.7);
 }
-.help-display,
-.guide-display {
+.help-display {
 	height: 77%;
 	width: 93.5%;
 	position: absolute;
@@ -258,67 +257,6 @@ html {
 	margin: 0.5em auto;
 	margin-left: 2em;
 	font-size: 1.1em;
-}
-/*
-.guide-display {
-	height: 77%;
-	width: 93.5%;
-	position: absolute;
-	top: 4.5%;
-	left: 3.5%;
-	background: rgba(0, 0, 0, 0.85);
-	
-	overflow: auto;
-	padding: 2em;
-	
-	font-family: serif;
-	font-family: "Arial Rounded MT Bold", "Helvetica Rounded" , Arial, sans-serif;
-	font-size: 1em;
-	color: #FFF;
-	text-shadow: 2px 2px 10px black;
-	line-height: 1.6;
-}
-*/
-.guide-display {
-//	background: none;
-	padding: 0;
-	margin: 0;
-}
-.guide-display table {
-	width: 100%;
-	height: 100%;
-	font-size: 2em;
-//	background: rgba(178, 34, 34, 0.25);
-}
-.guide-display tr {
-//	height: 25%;
-	width: 100%;
-	border-bottom: 1px solid black;
-	display: flex;
-	cursor: pointer;
-	background: rgba(178, 34, 34, 0.5);
-}
-.guide-display td {
-	height: 100%;
-//	width: 75%;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-}
-.guide-display tr:hover {
-	background: rgba(255, 255, 255, 0.85);
-}
-.ch-tr {
-	width: 65%;
-	height: 25%;
-	font-size: 0.9em;
-	padding: 0.6em 0;
-}
-.ch-td {
-	width: 35%;
-	height: 25%;
-	font-size: 0.9em;
-	padding: 0.6em 0;
 }
 
 /*==========================================================================================
@@ -549,37 +487,15 @@ html {
 	grid-area: input;
 	width: 90%;
 	margin: 0 auto;
-	display: inline-block;
-	
-	height: 53px;
-	font-size: 1.5em;
 }	
 .input:focus{
-	outline:none;
-	color:rgba(255, 255, 255, 0.75);
-	border-color:rgba(255, 255, 255, 0.75);
-	padding-right: 80px;
+		outline:none;
+		color:rgba(255, 255, 255, 0.75);
+		border-color:rgba(255, 255, 255, 0.75);
 }
 #submit {
 	grid-area: submit;
 	font-size: 1.75em;
-	font-size: 1.15em;
-	position: absolute;
-	right: 8.5%;
-	bottom: 52.5%;
-}
-#go-back {
-/* 	display: inline-block; */
-	position: absolute;
-	font-size: 1em;
-	bottom: 44.1%;
-	left: 6.75%;
-	height: 50px;
-	width: 65px;
-//	border-radius: 1em;
-}
-#guide {
-/* 	display: inline-block; */
 }
 
 /*=================================
@@ -651,15 +567,9 @@ html {
 	height: 50px;
 	border-radius: 1em;
 	font-size: 2.5em;
-	font-size: 1.5em;
 }
 .ok {
 	font-size: 2.5em;
-}
-.sq {
-	width: 49px;
-	height: 49px;
-	border-radius: 0.1em;
 }
 
 

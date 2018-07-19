@@ -1,5 +1,24 @@
-var channels = ['favorites', 'trending', 'sports', 'drama', 'comedy', 'news', 'doctors'];
-var limits = [1, 10, 10, 10, 10, 10, 10];
+//var channels = ['favorites', 'trending', 'sports', 'drama', 'comedy', 'news', 'doctors'];
+//var limits = [1, 10, 10, 10, 10, 10, 10];
+
+var channels = ['favorites', 'trending', 'soap operas', 'local news', 'prime time',
+				'sitcoms', 'game shows', 'public broadcasting', 'court room', 'sports',
+				'fishing', 'cars', 'crime', 'music', 'entertainment',
+				'fashion', 'scifi', 'cartoons', 'babies', 'cooking',
+				'lifestyle', 'diy', 'home improvement', 'garden', 'infomercials',
+				'animals', 'sharks', 'documentary', 'history', 'educational',
+				'western', 'foreign', 'classic', 'news', 'politics',
+				'finance', 'movies', 'family', 'comedy', 'romantic',
+				'rom-com', 'drama', 'suspense', 'horror', 'action',
+				'adventure', 'adult', 'hip hop', 'r&b', 'pop',
+				'rock', 'classical', 'country'
+				];
+var limits = [1];
+for(var i = 0; i < channels.length -1; i++) {
+	limits.push(10);
+}
+console.log(channels.length + '=' + limits.length);
+console.log(limits);
 
 var favorites = [];
 var favIds = [];
@@ -27,6 +46,7 @@ var info = false;
 var hover = false;
 var menu ='tv';
 var hScroll = 0;
+var gScroll = 0;
 
 var api_key = '9Q3EhEbfCX4PIZY6SSPqQnSSngkJBDM7';
 var limit = 10;
@@ -186,15 +206,22 @@ function addChannel() {
 }
 function favorite() {
 	if(chanNum != 0) {
+		if(chanNum == 1) {
+			ajaxURL = 'https://api.giphy.com/v1/gifs/trending?lang=en&api_key=9Q3EhEbfCX4PIZY6SSPqQnSSngkJBDM7'
+					+ '&limit=' + limits[chanNum];
+		} else {
+			ajaxURL = 'https://api.giphy.com/v1/gifs/search?lang=en&api_key=9Q3EhEbfCX4PIZY6SSPqQnSSngkJBDM7'
+					+ '&limit=' + limits[chanNum] + '&q=' + channels[chanNum];
+		}
 		$.ajax({
-			url: 'https://api.giphy.com/v1/gifs/search?lang=en&api_key=9Q3EhEbfCX4PIZY6SSPqQnSSngkJBDM7'
-			+ '&limit=' + limits[chanNum] + '&q=' + channels[chanNum],
+			url: ajaxURL,
 			method: 'GET'
 		}).then(function(response) {
 			console.log(response.data[showNum].id);
 			if(favIds.indexOf(response.data[showNum].id) < 0) {
-				favIds.push(response.data[showNum].id);
-				favorites.push(response.data[showNum]);
+				
+					favIds.push(response.data[showNum].id);
+					favorites.push(response.data[showNum]);
 				
 				var favIcon = $('<i>');
 				favIcon.addClass('fav-display icon ion-heart');
@@ -376,6 +403,8 @@ function toggleHelp() {
 		$('.pause').removeClass('js-hidden');
 	} else {
 //		scrollTo(0)
+		hScroll = 0;
+		scrollz();
 		menu = 'help';
 		$('.help-display').removeClass('js-hidden');
 		$('.ok').removeClass('js-hidden');
@@ -406,12 +435,79 @@ function scrollz() {
 	$('.help-display').scrollTop($('.help-display').scrollTop() + $('#help-' + hScroll).position().top
     - $('.help-display').height()/2 + $('#help-' + hScroll).height()/2);
 */
+    var scrollId = '';
+    menu === 'help' ? scrollId = '#help-' : scrollId = '#chan-';
+    var scrollDisplay = null;
+    menu === 'help' ? scrollDisplay = '.help' : scrollDisplay = '.table';
+    console.log('scrollId: ' + scrollId + hScroll + '; scrollDisplay: ' + scrollDisplay);
+	
+/*
+	scrollDisplay.animate({
+		scrollTop: scrollDisplay.scrollTop() + $('#' + scrollId + '-' + hScroll).position().top
+		- scrollDisplay.height()/2 + $('#' + scrollId + '-' + hScroll).height()/2
+	}, 1000);
+    console.log(hScroll);
+*/
+/*
+    scrollDisplay = '.help';
+    scrollId = '#help-';
+    scrollDisplay = '.table';
+    scrollId = '#chan-';
+*/
+/*
+    $(scrollDisplay + '-display').animate({
+		scrollTop: $(scrollDisplay + '-display').scrollTop() + $(scrollId + hScroll).position().top
+		- $(scrollDisplay + '-display').height()/2 + $(scrollId + hScroll).height()/2
+	}, 1000);
+    console.log(scrollId + hScroll);
+*/
     
-	$('.help-display').animate({
-/* 		$('.help-display'). */scrollTop: $('.help-display').scrollTop() + $('#help-' + hScroll).position().top
+    $('.help-display').animate({
+		scrollTop: $('.help-display').scrollTop() + $('#help-' + hScroll).position().top
 		- $('.help-display').height()/2 + $('#help-' + hScroll).height()/2
 	}, 1000);
-    
+    console.log(scrollId + hScroll);
+}
+function scrollGuide() {
+	$('.table-display').animate({
+		scrollTop: $('.table-display').scrollTop() + $('#chan-' + gScroll).position().top
+		- $('.table-display').height()/2 + $('#chan-' + gScroll).height()/2
+	}, 1000);
+}
+function toggleGuide() {
+	if(menu === 'guide') {
+		menu = 'tv';
+	} else {
+		menu = 'guide';
+		$('#guide-table').empty();
+		channels.forEach(function(channel, i) {
+			var row = $('<tr>');
+			row.attr({
+				'data-channel': i,
+				'id': 'chan-' + i
+			});
+			
+			i < 10 ? i = '0' + i : i = i;
+			var chNum = $('<td>');
+			chNum.addClass('ch-td');
+			chNum.text('Channel ' + i);
+			
+			var chName = $('<td>');
+			chName.addClass('ch-tr');
+			chName.text(channel.toUpperCase());
+			
+			row.append(chNum, chName);
+			$('#guide-table').append(row);
+			
+
+		});
+		
+		gScroll = chanNum;
+		scrollGuide();
+	}
+	$('.guide-display').toggleClass('js-hidden');
+	$('.pause').toggleClass('js-hidden');
+	$('.ok').toggleClass('js-hidden');
 }
 
 changeChannel();
@@ -431,6 +527,8 @@ $('.up').on('click', function() {
 			$('.back-btn').removeClass('back-btn-hover');
 			hover = false;
 		}
+	} else if(menu === 'guide') {
+		
 	} else {
 		chanNum++;
 		logPrev();
@@ -445,6 +543,17 @@ $('.right').on('click', function() {
 		$('.back-btn').removeClass('back-btn-hover');
 		hover = false;
 	} else if(menu === 'help') {
+		if(hScroll < 8) {
+			hScroll += 2;
+			hScroll > 8 ? hScroll = 8 : hScroll = hScroll;
+			scrollz();
+		} else if(!hover) {
+			hscroll = 7;
+			scrollz();
+			$('.back-btn').toggleClass('back-btn-hover');
+			hover = true;
+		}
+	} else if(menu === 'guide') {
 		
 	} else {
 		showNum++;
@@ -466,6 +575,8 @@ $('.down').on('click', function() {
 			$('.back-btn').addClass('back-btn-hover');
 			hover = true;
 		}
+	} else if(menu === 'guide') {
+	
 	} else {
 		chanNum--;
 		logPrev();
@@ -480,7 +591,15 @@ $('.left').on('click', function() {
 		$('.back-btn').removeClass('back-btn-hover');
 		hover = false;
 	} else if(menu === 'help') {
-		
+		if(hScroll > 0 && !hover) {
+			hScroll -= 2;
+			hScroll < 0 ? hScroll = 0 : hScroll = hScroll;
+			scrollz();
+		} else if(hover) {
+			$('.back-btn').removeClass('back-btn-hover');
+			hover = false;
+		}	
+	} else if(menu === 'guide') {
 	
 	} else {
 		showNum--;
@@ -498,7 +617,9 @@ $('.pause').on('click', function() {
 		pausePlay();
 	}
 */
-	if(menu === 'tv') {
+	if(chanNum == 0 && favorites.length == 0) {
+		
+	} else if(menu === 'tv') {
 		pausePlay();
 	}
 
@@ -506,8 +627,10 @@ $('.pause').on('click', function() {
 $('.ok').on('click', function() {
 	if(menu === 'info' && hover) {
 		toggleInfo();
+		hover = false;
 	} else if(menu === 'help' && hover) {
 		toggleHelp();
+		hover = false;
 	}
 });
 $('.add').on('click', function() {
@@ -533,7 +656,14 @@ $('.help').on('click', function() {
 
 
 $('#submit').on('click', function() {
-	addChannel();
+	if(menu === 'tv') {
+		addChannel();
+	}
+});
+$('.guide').click(function() {
+	if(menu === 'tv' || menu === 'guide') {
+		toggleGuide();
+	}
 });
 
 
