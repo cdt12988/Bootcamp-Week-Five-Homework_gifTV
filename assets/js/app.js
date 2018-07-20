@@ -469,16 +469,58 @@ function scrollz() {
     console.log(scrollId + hScroll);
 }
 function scrollGuide() {
+	
+	console.log(gScroll);
+	
 	$('.table-display').animate({
 		scrollTop: $('.table-display').scrollTop() + $('#chan-' + gScroll).position().top
 		- $('.table-display').height()/2 + $('#chan-' + gScroll).height()/2
 	}, 1000);
 }
+function guideScrollOriginal() {
+	$('html, body').animate({
+	    scrollTop: $('tr[data-channel="7"]').offset().top
+	},'slow');
+}
+function guideScroll() {
+	$('html, body').animate({
+	    scrollTop: $('.table-display').scrollTop() + $('tr[data-channel="7"]').position().top
+	    - $('.table-display').height()/2 + $('tr[data-channel="7"').height()/2
+	},'slow');
+}
+/*
+function gdScroll(element, to, duration) {
+	var start = element.scrollTop,
+		change = to - start,
+		currentTime = 0,
+		increment = 20;
+		console.log(gScroll);
+	var animateScroll = function() {
+		currentTime +- increment;
+		var val = Math.easeInOutQuad(currentTime, start, change, duration);
+		element.scrollTop = val;
+		if(currentTime < duration) {
+			setTimeout(animateScroll, increment);
+		}
+	};
+	animateScroll();
+}
+
+		var elem = $('#chan-' + gScroll);
+		var topPos = elem.offsetTop;
+*/
+function gdScroll() {
+	console.log(gScroll);
+	var topPos = $('#chan-' + gScroll).offsetTop;
+	$('.table-display').scrollTop = topPos -10;
+}
+
 function toggleGuide() {
 	if(menu === 'guide') {
 		menu = 'tv';
 	} else {
 		menu = 'guide';
+/*
 		$('#guide-table').empty();
 		channels.forEach(function(channel, i) {
 			var row = $('<tr>');
@@ -501,14 +543,26 @@ function toggleGuide() {
 			
 
 		});
+*/
 		
-		gScroll = chanNum;
+		gScroll = 7;
 		scrollGuide();
+//		guideScroll();
+
+//		gdScroll();
 	}
 	$('.guide-display').toggleClass('js-hidden');
 	$('.pause').toggleClass('js-hidden');
 	$('.ok').toggleClass('js-hidden');
 }
+/*
+Math.easeInOutQuad = function(t, b, c, d) {
+	t /= d/2;
+	if(t<1) return c/2*t*t + b;
+	t--;
+	return -c/2 * (t*(t-2)-1) + b;
+};
+*/
 
 changeChannel();
 
@@ -576,7 +630,10 @@ $('.down').on('click', function() {
 			hover = true;
 		}
 	} else if(menu === 'guide') {
-	
+		if(gScroll < channels.length) {
+			gScroll++;
+			scrollGuide();
+		}
 	} else {
 		chanNum--;
 		logPrev();
