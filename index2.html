@@ -1,0 +1,222 @@
+<!DOCTYPE HTML>
+<html lang="en-us">
+<head>
+	<meta charset="UTF-8">
+	<title>gifTV</title>
+	<meta name="description" content="gifTV App">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/normalize.css">
+	<link rel="stylesheet" href="assets/css/reset.css">
+	<link rel="stylesheet" href="assets/css/style.css">
+	<script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="assets/js/app2.js" defer></script>
+</head>
+
+<body>
+	<div class="app-container">
+		<div class="tv-container">
+			<div class="tv">
+				<img src="assets/images/blank-screen.jpeg" class="gif" id="gif">
+				<img src="assets/images/tv-screen.png" class="tv-img">
+				<div class="num-display js-hidden">01</div>
+				<div class="fav-container"></div>	
+				<div class="channel-display js-hidden"></div>
+				<div class="full-screen js-hidden"></div>
+				<div class="guide-display js-hidden">
+					
+<!--
+						<table id="guide-table" class="table-display">
+							<tr data-channel="0" id="chan-0">
+								<td>Channel 00</td>
+								<td>Favorites</td>
+							</tr>
+							<tr data-channel="1" id="chan-1">
+								<td>Channel 01</td>
+								<td>Favorites</td>
+							</tr>
+							<tr data-channel="2" id="chan-2">
+								<td>Channel 02</td>
+								<td>Favorites</td>
+							</tr>
+							<tr data-channel="3" id="chan-3">
+								<td>Channel 03</td>
+								<td>Favorites</td>
+							</tr>
+							<tr data-channel="4" id="chan-4">
+								<td>Channel 04</td>
+								<td>Favorites</td>
+							</tr>
+							<tr data-channel="5" id="chan-5">
+								<td>Channel 05</td>
+								<td>Favorites</td>
+							</tr>
+							<tr data-channel="6" id="chan-6">
+								<td>Channel 06</td>
+								<td>Favorites</td>
+							</tr>
+							<tr data-channel="7" id="chan-7">
+								<td>Channel 07</td>
+								<td>Favorites</td>
+							</tr>
+							<tr data-channel="8" id="chan-8">
+								<td>Channel 08</td>
+								<td>Favorites</td>
+							</tr>
+							<tr data-channel="9" id="chan-9">
+								<td>Channel 09</td>
+								<td>Favorites</td>
+							</tr>
+							<tr data-channel="10" id="chan-10">
+								<td>Channel 10</td>
+								<td>Favorites</td>
+							</tr>
+
+							
+						</table>
+-->
+					<div class="guide-info">
+						<div class="guide-data">
+							Channel 00
+						</div>
+						<div class="guide-data">
+							Favorites
+						</div>
+					</div>
+					<div class="guide-info">
+						<div class="guide-data">
+							Channel 01
+						</div>
+						<div class="guide-data">
+							Favorites
+						</div>
+					</div>
+					<div class="guide-info">
+						<div class="guide-data">
+							Channel 02
+						</div>
+						<div class="guide-data">
+							Favorites
+						</div>
+					</div>
+					<div class="guide-info">
+						<div class="guide-data">
+							Channel 03
+						</div>
+						<div class="guide-data">
+							Favorites
+						</div>
+					</div>
+					<div class="guide-info">
+						<div class="guide-data">
+							Channel 04
+						</div>
+						<div class="guide-data">
+							Favorites
+						</div>
+					</div>
+					<div class="guide-info">
+						<div class="guide-data">
+							Channel 05
+						</div>
+						<div class="guide-data">
+							Favorites
+						</div>
+					</div>
+					<div class="guide-info">
+						<div class="guide-data">
+							Channel 06
+						</div>
+						<div class="guide-data">
+							Favorites
+						</div>
+					</div>
+					<div class="guide-info">
+						<div class="guide-data">
+							Channel 07
+						</div>
+						<div class="guide-data">
+							Teenage Mutant Ninja Turtles
+						</div>
+					</div>
+					
+				</div>
+				<div class="help-display js-hidden">
+					<h2 id="help-0">Welcome to the Help Menu!</h2>
+					<p>-- Browse through the Help Menu to discover your remote's features</p>
+					<h3 id="help-1">Auxiliary Buttons:</h3>
+					<dl>
+						<dt id="help-1"><span>Info</span> [ <i class="icon ion-information"></i>, I ]</dt>
+							<dd>Press the info button to display/hide information about your current gif</dd>
+						<dt id="help-2"><span>Favorite</span> [ <i class="icon ion-heart"></i>, F ]</dt>
+							<dd>Press the favorite button to add the current gif to your Favorites Channel (Ch 00)</dd>
+						<dt><span>Help</span> [ <i class="icon ion-help"></i>, Q]</dt>
+							<dd>Press the help button to toggle the help menu</dd>
+						<dt id="help-3"><span>Add Gif</span> [ <i class="icon ion-plus-round"></i>, A ]</dt>
+							<dd>Press this button to add 10 new gifs to the current channel</dd>
+						<dt><span>Add Channel</span> [ ADD, Enter ]</dt>
+							<dd>After typing into the 'Add a channel...' field, this button will add a brand new channel with 10 new related gifs to your gifTV!</dd>
+						<dt id="help-4"><span>Back</span> [ <i class="icon ion-ios-refresh-empty"></i>, B ]</dt>
+							<dd>Press this button to change the channel to the previously viewed channel</dd>
+						<dt><span>Random Channel</span> [ <i class="icon ion-ios-shuffle-strong"></i>, R ]</dt>
+							<dd>Press this button to change the channel to a randomly selected channel</dd>
+					</dl>
+					<h3 id="help-5">Control Buttons</h3>
+					<dl>
+						<dt><span>Up/Down</span> [ <i class="icon ion-chevron-up"></i> / <i class="icon ion-chevron-down"></i>, Up/Down Arrows ]</dt>
+							<dd>Pressing these buttons will change the channel when viewing gifTV</dd>
+							<dd>They also allow you to navigate through the auxiliary menus</dd>
+						<dt id="help-6"><span>Left/Right</span> [ <i class="icon ion-chevron-left"></i> / <i class="icon ion-chevron-right"></i>, Left/Right Arrows ]</dt>
+							<dd>Pressing these buttons will change the current gif being displayed when viewing gifTV</dd>
+						<dt><span>Play/Pause</span> [ <i class="icon ion-play"></i> / <i class="icon ion-pause"></i>, P ]</dt>
+							<dd>Press the pause button to pause the current gif</dd>
+							<dd>Press the play button to play the current gif</dd>
+						<dt id="help-7"><span>OK [ OK, Enter ]</span></dt>
+							<dd>Press this button when within the auxiliary menus to select the current item</dd>
+					</dl>
+					<h3>Number Pad</h3>
+					<p id="help-8">Press the numbers within the number pad to quickly change the channel to the inputted channel number</p>
+					<div class="back-btn">Back</div>
+				</div>
+			</div>
+		</div>
+		<div class="remote-container">
+			<div class="remote">
+				<div class="buttons-container">
+					<div class="control-buttons">
+						<div class="info btn sm"><i class="icon ion-information"></i></div>
+						<div class="up btn long"><i class="icon ion-chevron-up"></i></div>
+						<div class="fav btn sm"><i class="icon ion-heart"></i></div>
+						<div class="left btn tall"><i class="icon ion-chevron-left"></i></div>
+						<div class="pause btn lg"><i class="icon ion-pause" id="pause"></i></div>
+						<div class="ok btn lg js-hidden">OK</div>
+						<div class="right btn tall"><i class="icon ion-chevron-right"></i></div>
+						<div class="help btn sm"><i class="icon ion-help"></i></div>
+						<div class="down btn long"><i class="icon ion-chevron-down"></i></div>
+						<div class="add btn sm"><i class="icon ion-plus-round"></i></div>
+					</div>
+					<div class="input-container">
+						<input class="input" type="text" placeholder="Add a channel...">
+						<div class="sq btn" id="submit">ADD</div>
+						<div class="go-back sm btn" id="go-back">BACK</div>
+						<div class="guide xlong btn" id="guide">GUIDE</div>
+					</div>
+					<div class="number-buttons">
+						<div class="number one btn sm">1</div>
+						<div class="number two btn sm">2</div>
+						<div class="number three btn sm">3</div>
+						<div class="number four btn sm">4</div>
+						<div class="number five btn sm">5</div>
+						<div class="number six btn sm">6</div>
+						<div class="number seven btn sm">7</div>
+						<div class="number eight btn sm">8</div>
+						<div class="number nine btn sm">9</div>
+						<div class="back btn sm"><i class="icon ion-ios-refresh-empty" id="back"></i></div>
+						<div class="number zero btn sm">0</div>
+						<div class="random btn sm"><i class="icon ion-ios-shuffle-strong"></i></div>
+					</div>	
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
