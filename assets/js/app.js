@@ -1,763 +1,857 @@
-//var channels = ['favorites', 'trending', 'sports', 'drama', 'comedy', 'news', 'doctors'];
-//var limits = [1, 10, 10, 10, 10, 10, 10];
-
-var channels = ['favorites', 'trending', 'soap operas', 'local news', 'prime time',
-				'sitcoms', 'game shows', 'public broadcasting', 'court room', 'sports',
-				'fishing', 'cars', 'crime', 'music', 'entertainment',
-				'fashion', 'scifi', 'cartoons', 'babies', 'cooking',
-				'lifestyle', 'diy', 'home improvement', 'garden', 'infomercials',
-				'animals', 'sharks', 'documentary', 'history', 'educational',
-				'western', 'foreign', 'classic', 'news', 'politics',
-				'finance', 'movies', 'family', 'comedy', 'romantic',
-				'rom-com', 'drama', 'suspense', 'horror', 'action',
-				'adventure', 'adult', 'hip hop', 'r&b', 'pop',
-				'rock', 'classical', 'country'
-				];
-var limits = [1];
-for(var i = 0; i < channels.length -1; i++) {
-	limits.push(10);
-}
-console.log(channels.length + '=' + limits.length);
-console.log(limits);
-
-var favorites = [];
-var favIds = [];
-var fav = false;
-
-var chanNum = 1;
-var chanDisplay = '00';
-var chanChangeTimer;
-var prevChannel = [1, 1];
-
-var showNum = 0;
-
-var state = null;
-var still = null;
-var animate = null;
-var gifName = '';
-var gifRating = '';
-
-var numClicked = false;
-var numVal = '';
-var numTimer;
-var numDisplayTimer;
-
-var info = false;
-var hover = false;
-var menu ='tv';
-var hScroll = 0;
-var gScroll = 0;
-
-var api_key = '9Q3EhEbfCX4PIZY6SSPqQnSSngkJBDM7';
-var limit = 10;
-
-function changeChannel() {
-// 	chanNum++;
-	if(chanNum >= channels.length) {
-		chanNum = 0;
-	} else if(chanNum < 0) {
-		chanNum = channels.length -1;
-	}
-	if(chanNum < 10) {
-		chanDisplay = '0' + chanNum;
-	} else {
-		chanDisplay = chanNum;
-	}
-	clearTimeout(chanChangeTimer);
-	$('.num-display').text(chanDisplay);
-	$('.num-display').attr('class', 'num-display');
-/*
-	if(channels[chanNum] != 'black+screen') {
-		$('.channel-display').text(channels[chanNum].toUpperCase());
-	} else {
-		$('.channel-display').text('Info');
-	}
-*/
-	
-	$('.channel-display').text(channels[chanNum].toUpperCase());
-	$('.channel-display').attr('class', 'channel-display');
-	
-	chanChangeTimer = setTimeout(function() {
-		$('.num-display').addClass('js-hidden');
-		$('.channel-display').addClass('js-hidden');
-	}, 2000)
-	if(fav) {
-		fav = false;
-	} else {
-		showNum = 0;
-	}
-	changeShow();
-}
-function changeShow() {
-//	showNum++;
-
-	$('.full-screen').addClass('js-hidden');
-	info = false;
-
-	if(chanNum != 0) {
-		if(showNum >= limits[chanNum]) {
-			showNum = 0;
-		} else if(showNum < 0) {
-			showNum = limits[chanNum] -1;
-		}
-		console.log(showNum);
-		
-/*
-		if(chanNum == 1) {
-			$.ajax({
-				url: 'https://api.giphy.com/v1/gifs/trending?lang=en&api_key=9Q3EhEbfCX4PIZY6SSPqQnSSngkJBDM7'
-				+ '&limit=' + limits[chanNum],
-				method: "GET"
-			}).then(function(response) {
-				
-			});
-		} else {
-*/
-		var ajaxURL = '';
-		if(chanNum == 1) {
-			ajaxURL = 'https://api.giphy.com/v1/gifs/trending?lang=en&api_key=9Q3EhEbfCX4PIZY6SSPqQnSSngkJBDM7'
-					+ '&limit=' + limits[chanNum];
-		} else {
-			ajaxURL = 'https://api.giphy.com/v1/gifs/search?lang=en&api_key=9Q3EhEbfCX4PIZY6SSPqQnSSngkJBDM7'
-					+ '&limit=' + limits[chanNum] + '&q=' + channels[chanNum];
-		}
-		$.ajax({
-			url: ajaxURL,
-			method: "GET"
-		}).then(function(response) {
-			console.log(response);
-			$('.gif').attr({
-				'src': response.data[showNum].images.fixed_height.url,
-				'data-still': response.data[showNum].images.fixed_height_still.url,
-				'data-animate': response.data[showNum].images.fixed_height.url,
-				'data-state': 'animate'
-			});
-			state = 'animate';
-			still = response.data[showNum].images.fixed_height_still.url;
-			animate = response.data[showNum].images.fixed_height.url;
-			gifName = response.data[showNum].title;
-			gifRating = response.data[showNum].rating.toUpperCase();
-			$('#pause').attr('class', 'icon ion-pause');
-		});
-// 		}
-	} else if(favorites.length != 0) {
-		if(showNum >= favorites.length) {
-			showNum = 0;
-		} else if(showNum < 0) {
-			showNum = favorites.length -1;
-		}
-		console.log('show num: ' + showNum);
-		console.log('favorites: ' + favorites);
-		console.log('Fav[showNum]: ' + favorites[showNum]);
-		console.log('src: ' + favorites[showNum].images.fixed_height.url);
-		$('.gif').attr({
-			'src': favorites[showNum].images.fixed_height.url,
-			'data-still': favorites[showNum].images.fixed_height_still.url,
-			'data-animate': favorites[showNum].images.fixed_height.url,
-			'data-state': 'animate'
-		});
-		state = 'animate';
-		still = favorites[showNum].images.fixed_height_still.url;
-		animate = favorites[showNum].images.fixed_height.url;
-		gifName = favorites[showNum].title;
-		gifRating = favorites[showNum].rating.toUpperCase();
-		$('#pause').attr('class', 'icon ion-pause');
-		
-		console.log('gifName: ' + gifName);
-		console.log('gifRating: ' + gifRating);
-
-	} else {
-		$('.gif').attr('src', 'assets/images/blank-screen.jpeg');
-	}
-}
-function pausePlay() {
-	if(state == 'animate') {
-		$('.gif').attr('src', still);
-		$('#pause').attr('class', 'icon ion-play');
-		state = 'still';
-	} else {
-		$('.gif').attr('src', animate);
-		$('#pause').attr('class', 'icon ion-pause');
-		state = 'animate';
-	}
-}
-function addShows() {
-	limits[chanNum] = limits[chanNum] + 10;
-	showNum = limits[chanNum] - 10;
-	console.log('Current Limits: ' + limits[chanNum]);
-	console.log('Show Number: ' + showNum);
-	changeShow();
-}
-function addChannel() {
-	var newChannel = $('.input').val().toLowerCase().trim();
-	console.log(newChannel);
-	if(channels.indexOf(newChannel) < 0. && newChannel != '') {
-		$('.input').val('');
-		chanNum = channels.length;
-		logPrev();
-		channels.push(newChannel);
-		limits.push(10);
-		changeChannel();
-	} else if(newChannel != '') {
-		chanNum = channels.indexOf(newChannel);
-		logPrev();
-		changeChannel();
-	}
-}
-function favorite() {
-	if(chanNum != 0) {
-		if(chanNum == 1) {
-			ajaxURL = 'https://api.giphy.com/v1/gifs/trending?lang=en&api_key=9Q3EhEbfCX4PIZY6SSPqQnSSngkJBDM7'
-					+ '&limit=' + limits[chanNum];
-		} else {
-			ajaxURL = 'https://api.giphy.com/v1/gifs/search?lang=en&api_key=9Q3EhEbfCX4PIZY6SSPqQnSSngkJBDM7'
-					+ '&limit=' + limits[chanNum] + '&q=' + channels[chanNum];
-		}
-		$.ajax({
-			url: ajaxURL,
-			method: 'GET'
-		}).then(function(response) {
-			console.log(response.data[showNum].id);
-			if(favIds.indexOf(response.data[showNum].id) < 0) {
-				
-					favIds.push(response.data[showNum].id);
-					favorites.push(response.data[showNum]);
-				
-				var favIcon = $('<i>');
-				favIcon.addClass('fav-display icon ion-heart');
-				$('.fav-container').empty().append(favIcon);
-			} else {
-//				alert('already favorited!');
-				chanNum = 0;
-				logPrev();
-				showNum = favIds.indexOf(response.data[showNum]);
-				fav = true;
-				changeChannel();
+var tv = {
+	menu: 'tv',
+	channels: {
+		//	Variables
+		num: 1,				
+		display: '00',
+		chanChangeTimer: null,
+		//	Arrays
+		prevChannel: [1, 1],
+		initialChannels: ['favorites', 'trending', 'soap operas', 'local news', 'prime time',
+			'sitcoms', 'game shows', 'public broadcasting', 'court room', 'sports',
+			'fishing', 'cars', 'crime', 'music', 'entertainment',
+			'fashion', 'scifi', 'cartoons', 'babies', 'cooking',
+			'lifestyle', 'diy', 'home improvement', 'garden', 'infomercials',
+			'animals', 'sharks', 'documentary', 'history', 'educational',
+			'western', 'foreign', 'classic', 'news', 'politics',
+			'finance', 'movies', 'family', 'comedy', 'romantic',
+			'rom-com', 'drama', 'suspense', 'horror', 'action',
+			'adventure', 'adult', 'hip hop', 'r&b', 'pop',
+			'rock', 'classical', 'country'
+			],
+		storedChannels: JSON.parse(localStorage.getItem('channels')),
+		initialLimits: [1],
+		storedLimits: JSON.parse(localStorage.getItem('limits')),
+		//	Methods
+		logPrevChan: function() {
+			//	this method stores the previous and current channel to use when needed
+			//	sets first index to the second index value and then sets the second index value to the current channel
+			this.prevChannel[0] = this.prevChannel[1];
+			this.prevChannel[1] = this.num;
+		},
+		changeChannel: function() {
+			//	if user attempts to move above last channel, resets to first; if they go below first, resets to last
+			if(this.num >= this.storedChannels.length) {
+				this.num = 0;
+			} else if(this.num < 0) {
+				this.num = this.storedChannels.length -1;
 			}
-			console.log(favorites);
-			console.log(favIds);
-		});
-	} 
-/*
-	else if(favorites.length == 0) {
-		alert('favorite something first!');
-	} else{
-		alert('already favorited!');
-	}
-*/
-}
-function logPrev() {
-	prevChannel[0] = prevChannel[1];
-	prevChannel[1] = chanNum;
-}
-function randomChan() {
-	chanNum = Math.floor(Math.random() * channels.length);
-	if(chanNum == 0) {
-		randomChan();
-	} else {
-		logPrev();
-		changeChannel();
-	}
-}
-function numberClicked(number) {
-	clearTimeout(chanChangeTimer);
-	if(!numClicked) {
-		numClicked = true;
-		numVal += number;
-		$('.num-display').text(numVal + '-');
-		$('.num-display').attr('class', 'num-display');
-		numTimer = setTimeout(function() {
-			handleNums();
-		}, 1500)
-	} else {
-		numVal += number;
-		handleNums();
-	}
-}
-function handleNums() {
-	clearTimeout(numTimer);
-//	clearTimeout(numDisplayTimer);
-	numClicked = false;
-	 
-//	var numString = numVal;
-	if(parseInt(numVal) < channels.length) {
-		chanNum = parseInt(numVal);
-		numVal = '';
-		logPrev();
-		changeChannel();
-/*
-		clearTimeout(chanChangeTimer);
-		numDisplayTimer = setTimeout(function() {
-			$('.num-display').addClass('js-hidden');
-			$('.channel-display').addClass('js-hidden');
-		}, 2000)
-*/
-	} else {
-		numVal = ''
-		changeChannel();
-/*
-		clearTimeout(chanChangeTimer);
-		numDisplayTimer = setTimeout(function() {
-			$('.num-display').addClass('js-hidden');
-			$('.channel-display').addClass('js-hidden');
-		}, 2000)
-*/
-	}
-/*
-	 if(parseInt(currentNum) < 10. && currentNum[0] != '0') {
-		 numString = '0' + numString;
-	 } else if(currentNum === '0') {
-		 numString = '0' + numString;
-	 }
-	 $('.numDisplay').text(numString);
-*/
-}
-
-/*
-channels.forEach(function(channel) {
-	$.ajax({
-		url: 'https://api.giphy.com/v1/gifs/search?lang=en&api_key=9Q3EhEbfCX4PIZY6SSPqQnSSngkJBDM7' + '&limit=' + limit + '&q=' + channel,
-		method: 'GET'
-	}).then(function(response) {
-		console.log(response);
-	});
-});
-
-channels.forEach(function(channel) {
-	$.ajax({
-		url: 'https://api.giphy.com/v1/gifs/search?lang=en&api_key=9Q3EhEbfCX4PIZY6SSPqQnSSngkJBDM7&limit=10&q=' + channel,
-		method: 'GET'
-	}).then(function(response) {
-		console.log(channel + ': ' + response);
-	});
-});
-*/
-
-function toggleInfo() {
-	if(info) {
-		info = false;
-		hover = false;
-		menu = 'tv';
-		$('.full-screen').addClass('js-hidden');
-		$('.ok').addClass('js-hidden');
-		$('.pause').removeClass('js-hidden');
-		
-	} else {
-		info = true;
-		menu = 'info';
-		
-		$('.full-screen').empty();
-		
-		var infoDiv = $('<div>');
-		infoDiv.addClass('info-display');
-		
-		var nameSpan = $('<span>');
-		if(favorites.length == 0 && chanNum == 0) {
-			nameSpan.text('N/A');
-		} else {
-			nameSpan.text(gifName);
-		}
-		
-		var infoName = $('<p>');
-		infoName.text('GIF Name: ');
-		infoName.append(nameSpan);
-		
-		var channelSpan = $('<span>');
-		channelSpan.text(chanDisplay + ' - ' + channels[chanNum]);
-		
-		var infoChan = $('<p>');
-		infoChan.text('Channel: ');
-		infoChan.append(channelSpan);
-		
-		var ratingSpan = $('<span>');
-		if(favorites.length == 0 && chanNum == 0) {
-			ratingSpan.text('N/A');
-		} else {
-			ratingSpan.text(gifRating);
+			//	changes the channel display text to always be at least 2 digits
+			if(this.num < 10) {
+				this.display = '0' + this.num;
+			} else {
+				this.display = this.num;
+			}
+			//	clears the existing channel change timer, if any
+			clearTimeout(this.chanChangeTimer);
+			//	displays the channel number on screen
+			$('.num-display').text(this.display);
+			$('.num-display').attr('class', 'num-display');
+			//	displays the channel text on screen
+			$('.channel-display').text(this.storedChannels[this.num].toUpperCase());
+			$('.channel-display').attr('class', 'channel-display');
 			
+			//	sets timer to remove the channel displays after 2 seconds
+			this.chanChangeTimer = setTimeout(function() {
+				$('.num-display').addClass('js-hidden');
+				$('.channel-display').addClass('js-hidden');
+			}, 2000)
+			//	checks if user clicked 'fav' on an already favorited gif (this is set in the favorite() function)
+			//	resets the var to false if true and leaves gifNum the same so it will take them to the selected gif
+			//	otherwise, it sets the gifNum to 0
+			//	--Dev Note-- ran into performance issues calling the API for specific gifs by gifNum, so set it back to 0 (the first index) each time
+			if(this.favorites.fav) {
+				this.favorites.fav = false;
+			} else {
+				tv.gifs.num = 0;
+			}
+			//	calls the changeGif method to actually call the API
+			tv.gifs.changeGif();
+		},
+		addChannel: function() {
+			//	captures and formats the new channel input
+			var newChannel = $('.input').val().toLowerCase().trim();
+			//	makes sure the new channel doesn't already exist and isn't an empty string
+			//	--Dev Note-- Could use better validation methods and security measures
+			if(this.storedChannels.indexOf(newChannel) < 0. && newChannel != '') {
+				//	clears the input field
+				$('.input').val('');
+				//	changes the channel number to the new channel
+				this.num = this.storedChannels.length;
+				//	update the previous channel placeholder
+				this.logPrevChan();
+				//	add the new channel and limits to the stored channels/limits
+				this.storedChannels.push(newChannel);
+				this.storedLimits.push(10);
+				//	update the user's local storage to include the new channels/limits
+				localStorage.setItem('channels', JSON.stringify(this.storedChannels));
+				localStorage.setItem('limits', JSON.stringify(this.storedLimits));
+				//	change the channel using the updated info
+				this.changeChannel();
+			//	if the new channel already exists, change the channel to that channel
+			} else if(newChannel != '') {
+				$('.input').val('');
+				this.num = this.storedChannels.indexOf(newChannel);
+				this.logPrevChan();
+				this.changeChannel();
+			}
+		},
+		randomChannel: function() {
+			//	set channel number to a random number between 0 and the number of channels
+			this.num = Math.floor(Math.random() * this.storedChannels.length);
+			//	reruns the function if channel is 0 to prevent randomly selecting the favorites channel
+			if(this.num == 0) {
+				randomChan();
+			//	otherwise, just change the channel to the new random number (after updating the previous channel holder)
+			} else {
+				this.logPrevChan();
+				this.changeChannel();
+			}
+		},
+		//	Favorites Object
+		favorites: {
+			fav: false,
+			storedFavorites: JSON.parse(localStorage.getItem('favorites')),
+			storedFavIds: JSON.parse(localStorage.getItem('favIds')),
+			favorite: function() {
+				//	ensures that the user can't favorite gifs already in the favorites channel
+				if(tv.channels.num != 0) {
+					//	changes the ajax URL to either the trending endpoint or the search endpoint (depending on the current channel) 
+					if(tv.channels.num == 1) {
+						ajaxURL = 'https://api.giphy.com/v1/gifs/trending?lang=en&api_key=9Q3EhEbfCX4PIZY6SSPqQnSSngkJBDM7'
+								+ '&limit=' + tv.channels.storedLimits[tv.channels.num];
+					} else {
+						ajaxURL = 'https://api.giphy.com/v1/gifs/search?lang=en&api_key=9Q3EhEbfCX4PIZY6SSPqQnSSngkJBDM7'
+								+ '&limit=' + tv.channels.storedLimits[tv.channels.num] + '&q=' + tv.channels.storedChannels[tv.channels.num];
+					}
+					//	perform the ajax call
+					$.ajax({
+						url: ajaxURL,
+						method: 'GET'
+					}).then(function(response) {
+						//	checks that the favorited gif is not already in favorites (using the gif's API id)
+						if(tv.channels.favorites.storedFavIds.indexOf(response.data[tv.gifs.num].id) < 0) {
+							//	adds the gif object and id from the API call to the stored arrays
+							tv.channels.favorites.storedFavIds.push(response.data[tv.gifs.num].id);
+							tv.channels.favorites.storedFavorites.push(response.data[tv.gifs.num]);
+							//	update the user's local storage to include the new favorited gif
+							localStorage.setItem('favorites', JSON.stringify(tv.channels.favorites.storedFavorites));
+							localStorage.setItem('favIds', JSON.stringify(tv.channels.favorites.storedFavIds));
+							//	create and display the heart icon on screen for a moment (animation done in CSS)
+							var favIcon = $('<i>');
+							favIcon.addClass('fav-display icon ion-heart');
+							$('.fav-container').empty().append(favIcon);
+						//	if the gif has already been favorited, change the channel to favorites and display the same gif
+						} else {
+							tv.channels.num = 0;
+							tv.channels.logPrevChan();
+							tv.gifs.num = tv.channels.favorites.storedFavIds.indexOf(response.data[tv.gifs.num]);
+							//	this variable is needed to override the default gif index number of 0 on channel change
+							tv.channels.favorites.fav = true;
+							tv.channels.changeChannel();
+						}
+					});
+				} 
+			}
 		}
-		
-		var infoRating = $('<p>');
-		infoRating.text('Rated: ');
-		infoRating.append(ratingSpan);
-		
-		var backBtn = $('<div>');
-		backBtn.attr('class', 'back-btn');
-		backBtn.text('Back');
-		
-		infoDiv.append(infoName, infoChan, infoRating, backBtn);
-		$('.full-screen').append(infoDiv);
-		
-		$('.full-screen').removeClass('js-hidden');
-		
-		$('.ok').removeClass('js-hidden');
-		$('.pause').addClass('js-hidden');
-	}
-}
-function toggleHelp() {
-	if(menu === 'help') {
-		menu = 'tv';
-// 		hScroll = 0;
-		$('.help-display').addClass('js-hidden');
-		$('.ok').addClass('js-hidden');
-		$('.pause').removeClass('js-hidden');
-	} else {
-//		scrollTo(0)
-		hScroll = 0;
-		scrollz();
-		menu = 'help';
-		$('.help-display').removeClass('js-hidden');
-		$('.ok').removeClass('js-hidden');
-		$('.pause').addClass('js-hidden');
-	}
-}
-function scrollTo(num) {
-	$('html, .help-display').animate({
-	    scrollTop: $('#help-' + num).offset().top
-	}, 1000);
-	console.log('help-' + num);
-}
-function scroll() {
-	var elem = $('#help-' + hScroll);
-	if(elem) {
-		var main = $(".help-display"),
-		t = main.offset().top;
-		main.scrollTop(elem.position().top - t);
-		console.log('help-' + hScroll);
-	}
-}
-function scrollz() {
-	
-// 	$('html, .help-display').animate({
-//     }, 1000);
-	
-/*
-	$('.help-display').scrollTop($('.help-display').scrollTop() + $('#help-' + hScroll).position().top
-    - $('.help-display').height()/2 + $('#help-' + hScroll).height()/2);
-*/
-    var scrollId = '';
-    menu === 'help' ? scrollId = '#help-' : scrollId = '#chan-';
-    var scrollDisplay = null;
-    menu === 'help' ? scrollDisplay = '.help' : scrollDisplay = '.table';
-    console.log('scrollId: ' + scrollId + hScroll + '; scrollDisplay: ' + scrollDisplay);
-	
-/*
-	scrollDisplay.animate({
-		scrollTop: scrollDisplay.scrollTop() + $('#' + scrollId + '-' + hScroll).position().top
-		- scrollDisplay.height()/2 + $('#' + scrollId + '-' + hScroll).height()/2
-	}, 1000);
-    console.log(hScroll);
-*/
-/*
-    scrollDisplay = '.help';
-    scrollId = '#help-';
-    scrollDisplay = '.table';
-    scrollId = '#chan-';
-*/
-/*
-    $(scrollDisplay + '-display').animate({
-		scrollTop: $(scrollDisplay + '-display').scrollTop() + $(scrollId + hScroll).position().top
-		- $(scrollDisplay + '-display').height()/2 + $(scrollId + hScroll).height()/2
-	}, 1000);
-    console.log(scrollId + hScroll);
-*/
-    
-    $('.help-display').animate({
-		scrollTop: $('.help-display').scrollTop() + $('#help-' + hScroll).position().top
-		- $('.help-display').height()/2 + $('#help-' + hScroll).height()/2
-	}, 1000);
-    console.log(scrollId + hScroll);
-}
-function scrollGuide() {
-	
-	console.log(gScroll);
-	
-	$('.table-display').animate({
-		scrollTop: $('.table-display').scrollTop() + $('#chan-' + gScroll).position().top
-		- $('.table-display').height()/2 + $('#chan-' + gScroll).height()/2
-	}, 1000);
-}
-function guideScrollOriginal() {
-	$('html, body').animate({
-	    scrollTop: $('tr[data-channel="7"]').offset().top
-	},'slow');
-}
-function guideScroll() {
-	$('html, body').animate({
-	    scrollTop: $('.table-display').scrollTop() + $('tr[data-channel="7"]').position().top
-	    - $('.table-display').height()/2 + $('tr[data-channel="7"').height()/2
-	},'slow');
-}
-/*
-function gdScroll(element, to, duration) {
-	var start = element.scrollTop,
-		change = to - start,
-		currentTime = 0,
-		increment = 20;
-		console.log(gScroll);
-	var animateScroll = function() {
-		currentTime +- increment;
-		var val = Math.easeInOutQuad(currentTime, start, change, duration);
-		element.scrollTop = val;
-		if(currentTime < duration) {
-			setTimeout(animateScroll, increment);
-		}
-	};
-	animateScroll();
-}
+	},
+/**************************************************************************************************
 
-		var elem = $('#chan-' + gScroll);
-		var topPos = elem.offsetTop;
-*/
-function gdScroll() {
-	console.log(gScroll);
-	var topPos = $('#chan-' + gScroll).offsetTop;
-	$('.table-display').scrollTop = topPos -10;
-}
+												GIFs
 
-function toggleGuide() {
-	if(menu === 'guide') {
-		menu = 'tv';
-	} else {
-		menu = 'guide';
-/*
-		$('#guide-table').empty();
-		channels.forEach(function(channel, i) {
-			var row = $('<tr>');
-			row.attr({
-				'data-channel': i,
-				'id': 'chan-' + i
-			});
-			
-			i < 10 ? i = '0' + i : i = i;
-			var chNum = $('<td>');
-			chNum.addClass('ch-td');
-			chNum.text('Channel ' + i);
-			
-			var chName = $('<td>');
-			chName.addClass('ch-tr');
-			chName.text(channel.toUpperCase());
-			
-			row.append(chNum, chName);
-			$('#guide-table').append(row);
-			
-
-		});
-*/
-		
-		gScroll = 7;
-		scrollGuide();
-//		guideScroll();
-
-//		gdScroll();
-	}
-	$('.guide-display').toggleClass('js-hidden');
-	$('.pause').toggleClass('js-hidden');
-	$('.ok').toggleClass('js-hidden');
-}
-/*
-Math.easeInOutQuad = function(t, b, c, d) {
-	t /= d/2;
-	if(t<1) return c/2*t*t + b;
-	t--;
-	return -c/2 * (t*(t-2)-1) + b;
-};
-*/
-
-changeChannel();
-
-$('.up').on('click', function() {
-	if(info && !hover) {
-		$('.back-btn').addClass('back-btn-hover');
-		hover = true;
-	} else if(hover) {
-		$('.back-btn').removeClass('back-btn-hover');
-		hover = false;
-	} else if(menu === 'help') {
-		if(hScroll > 0 && !hover) {
-			hScroll--;
-			scrollz();
-		} else if(hover) {
-			$('.back-btn').removeClass('back-btn-hover');
-			hover = false;
-		}
-	} else if(menu === 'guide') {
-		
-	} else {
-		chanNum++;
-		logPrev();
-		changeChannel();
-	}
-});
-$('.right').on('click', function() {
-	if(info && !hover) {
-		$('.back-btn').addClass('back-btn-hover');
-		hover = true;
-	} else if(hover) {
-		$('.back-btn').removeClass('back-btn-hover');
-		hover = false;
-	} else if(menu === 'help') {
-		if(hScroll < 8) {
-			hScroll += 2;
-			hScroll > 8 ? hScroll = 8 : hScroll = hScroll;
-			scrollz();
-		} else if(!hover) {
-			hscroll = 7;
-			scrollz();
-			$('.back-btn').toggleClass('back-btn-hover');
-			hover = true;
-		}
-	} else if(menu === 'guide') {
-		
-	} else {
-		showNum++;
-		changeShow();
-	}
-});
-$('.down').on('click', function() {
-	if(menu === 'info' && !hover) {
-		$('.back-btn').addClass('back-btn-hover');
-		hover = true;
-	} else if(menu === 'info' && hover) {
-		$('.back-btn').removeClass('back-btn-hover');
-		hover = false;
-	} else if(menu === 'help') {
-		if(hScroll < 8) {
-			hScroll++;
-			scrollz();
-		} else if(!hover) {
-			$('.back-btn').addClass('back-btn-hover');
-			hover = true;
-		}
-	} else if(menu === 'guide') {
-		if(gScroll < channels.length) {
-			gScroll++;
-			scrollGuide();
-		}
-	} else {
-		chanNum--;
-		logPrev();
-		changeChannel();
-	}
-});
-$('.left').on('click', function() {
-	if(info && !hover) {
-		$('.back-btn').addClass('back-btn-hover');
-		hover = true;
-	} else if(hover) {
-		$('.back-btn').removeClass('back-btn-hover');
-		hover = false;
-	} else if(menu === 'help') {
-		if(hScroll > 0 && !hover) {
-			hScroll -= 2;
-			hScroll < 0 ? hScroll = 0 : hScroll = hScroll;
-			scrollz();
-		} else if(hover) {
-			$('.back-btn').removeClass('back-btn-hover');
-			hover = false;
+**************************************************************************************************/	
+	gifs: {
+		num: 0,
+		state: null,
+		still: null,
+		animate: null,
+		name: '',
+		rating: '',
+		changeGif: function() {
+			//	hides and resets the info menu in case this method is called from there
+			$('.full-screen').addClass('js-hidden');
+			tv.menus.info.info = false;
+			//	if channel not on favorites:
+			if(tv.channels.num != 0) {
+				//	if user attempts to move above last gif, resets to first; if they go below first, resets to last
+				if(tv.gifs.num >= tv.channels.storedLimits[tv.channels.num]) {
+					tv.gifs.num = 0;
+				} else if(tv.gifs.num < 0) {
+					tv.gifs.num = tv.channels.storedLimits[tv.channels.num] -1;
+				}
+				//	changes the ajax URL to either the trending endpoint or the search endpoint (depending on the current channel)
+				var ajaxURL = '';
+				if(tv.channels.num == 1) {
+					ajaxURL = 'https://api.giphy.com/v1/gifs/trending?lang=en&api_key=9Q3EhEbfCX4PIZY6SSPqQnSSngkJBDM7'
+							+ '&limit=' + tv.channels.storedLimits[tv.channels.num];
+				} else {
+					ajaxURL = 'https://api.giphy.com/v1/gifs/search?lang=en&api_key=9Q3EhEbfCX4PIZY6SSPqQnSSngkJBDM7'
+							+ '&limit=' + tv.channels.storedLimits[tv.channels.num] + '&q=' + tv.channels.storedChannels[tv.channels.num];
+				}
+				//	perform the ajax call
+				$.ajax({
+					url: ajaxURL,
+					method: "GET"
+				}).then(function(response) {
+					//	display the gif on screen and set all if its data attributes
+					$('.gif').attr({
+						'src': response.data[tv.gifs.num].images.fixed_height.url,
+						'data-still': response.data[tv.gifs.num].images.fixed_height_still.url,
+						'data-animate': response.data[tv.gifs.num].images.fixed_height.url,
+						'data-state': 'animate'
+					});
+					//	set the current gif's state to 'animate' and hold the URLs and other data for ease of use later
+					tv.gifs.state = 'animate';
+					tv.gifs.still = response.data[tv.gifs.num].images.fixed_height_still.url;
+					tv.gifs.animate = response.data[tv.gifs.num].images.fixed_height.url;
+					tv.gifs.name = response.data[tv.gifs.num].title;
+					tv.gifs.rating = response.data[tv.gifs.num].rating.toUpperCase();
+					//	ensure that the pause button is displayed instead of the play button since the default state is 'animate'
+					$('#pause').attr('class', 'icon ion-pause');
+				});
+			//	The below code does very similar things as the above code, but uses the favorites array instead of the normal channels
+			//	if channel is 'favorite' and favorites isn't empty:
+			} else if(tv.channels.favorites.storedFavorites.length != 0) {
+				//	if user attempts to move above last favorited gif, resets to first; if they go below first, resets to last	
+				if(this.num >= tv.channels.favorites.storedFavorites.length) {
+					tv.gifs.num = 0;
+				} else if(this.num < 0) {
+					tv.gifs.num = tv.channels.favorites.storedFavorites.length -1;
+				}
+				//	display the gif on screen and set all if its data attributes
+				$('.gif').attr({
+					'src': tv.channels.favorites.storedFavorites[tv.gifs.num].images.fixed_height.url,
+					'data-still': tv.channels.favorites.storedFavorites[tv.gifs.num].images.fixed_height_still.url,
+					'data-animate': tv.channels.favorites.storedFavorites[tv.gifs.num].images.fixed_height.url,
+					'data-state': 'animate'
+				});
+				//	set the current gif's state to 'animate' and hold the URLs and other data for ease of use later
+				tv.gifs.state = 'animate';
+				tv.gifs.still = tv.channels.favorites.storedFavorites[tv.gifs.num].images.fixed_height_still.url;
+				tv.gifs.animate = tv.channels.favorites.storedFavorites[tv.gifs.num].images.fixed_height.url;
+				tv.gifs.name = tv.channels.favorites.storedFavorites[tv.gifs.num].title;
+				tv.gifs.rating = tv.channels.favorites.storedFavorites[tv.gifs.num].rating.toUpperCase();
+				//	ensure that the pause button is displayed instead of the play button since the default state is 'animate'
+				$('#pause').attr('class', 'icon ion-pause');
+			//	if on the favorites channel and nothing has been favorited, display a default blank screen
+			} else {
+				$('.gif').attr('src', 'assets/images/blank-screen.jpeg');
+			}
+		},
+		addGifs: function() {
+			//	increase the current channel's limit by 10
+			tv.channels.storedLimits[tv.channels.num] = tv.channels.storedLimits[tv.channels.num] + 10;
+			//	update the user's local storage with the new limits
+			localStorage.setItem('limits', JSON.stringify(tv.channels.storedLimits));
+			//	set the current gif to the first of the newest 10 gifs
+			this.num = tv.channels.storedLimits[tv.channels.num] - 10;
+			//	run the API call with the updated info
+			this.changeGif();
+		},
+		pausePlay: function() {
+			//	toggles between the 'animate'/'still' state and changes the gif image and play/pause button accordingly
+			if(tv.gifs.state == 'animate') {
+				$('.gif').attr('src', tv.gifs.still);
+				$('#pause').attr('class', 'icon ion-play');
+				tv.gifs.state = 'still';
+			} else {
+				$('.gif').attr('src', tv.gifs.animate);
+				$('#pause').attr('class', 'icon ion-pause');
+				tv.gifs.state = 'animate';
+			}
 		}	
-	} else if(menu === 'guide') {
-	
-	} else {
-		showNum--;
-		changeShow();
+	},
+/**************************************************************************************************
+
+											TV Menus
+
+**************************************************************************************************/
+	menus: {
+		info: {
+			info: false,
+			hover: false,
+			toggleInfo: function() {
+				//	if info menu is already open, reset booleans, tv menu, and change displays accordingly
+				if(this.info) {
+					this.info = false;
+					this.hover = false;
+					tv.menu = 'tv';
+					$('.full-screen').addClass('js-hidden');
+					$('.ok').addClass('js-hidden');
+					$('.pause').removeClass('js-hidden');
+				//	if info menu is not open:
+				} else {
+					//	toggle boolean and set tv menu to info
+					this.info = true;
+					tv.menu = 'info';
+					//	empty the info menu div
+					$('.full-screen').empty();
+					//	create a container div to display the current gif info
+					var infoDiv = $('<div>');
+					infoDiv.addClass('info-display');
+					//	create a span to hold the current gif name
+					var nameSpan = $('<span>');
+					//	sets the name to 'N/A' if on the favorites channel and there aren't currently any favorites
+					if(tv.channels.favorites.storedFavorites.length == 0 && tv.channels.num == 0) {
+						nameSpan.text('N/A');
+					//	otherwise, set the name to the current gif's name
+					} else {
+						nameSpan.text(tv.gifs.name);
+					}
+					//	create a paragraph to display the gif name info and append the gif name span
+					var infoName = $('<p>');
+					infoName.text('GIF Name: ');
+					infoName.append(nameSpan);
+					//	repeats the process above for the current channel number and name
+					var channelSpan = $('<span>');
+					channelSpan.text(tv.channels.display + ' - ' + tv.channels.storedChannels[tv.channels.num]);
+					
+					var infoChan = $('<p>');
+					infoChan.text('Channel: ');
+					infoChan.append(channelSpan);
+					//	repeats the same process for the current gif's rating (displays 'N/A' if on favorites channel with no current favorites)
+					var ratingSpan = $('<span>');
+					if(tv.channels.favorites.storedFavorites.length == 0 && tv.channels.num == 0) {
+						ratingSpan.text('N/A');
+					} else {
+						ratingSpan.text(tv.gifs.rating);	
+					}
+					var infoRating = $('<p>');
+					infoRating.text('Rated: ');
+					infoRating.append(ratingSpan);
+					//	creates a back button
+					var backBtn = $('<div>');
+					backBtn.attr('class', 'back-btn');
+					backBtn.text('Back');
+					//	appends all the above elements to the info container div and appends that to the info menu display
+					infoDiv.append(infoName, infoChan, infoRating, backBtn);
+					$('.full-screen').append(infoDiv);
+					//	shows the info menu
+					$('.full-screen').removeClass('js-hidden');
+					//	switches the select and play/pause button displays accordingly
+					$('.ok').removeClass('js-hidden');
+					$('.pause').addClass('js-hidden');
+				}
+			}
+		},
+		help: {
+			scrollId: 0,
+			scroll: function() {
+				$('.help-display').animate({
+					//	scrolls to the element with the given scroll id within the help container
+					scrollTop: $('.help-display').scrollTop() + $('#help-' + this.scrollId).position().top
+					//	centers the id being scrolled to by dividing the heights in half and subtracting that from the top of the scroll
+					- $('.help-display').height()/2 + $('#help-' + this.scrollId).height()/2
+				}, 1000);
+			},
+			toggleHelp: function() {
+				if(tv.menu === 'help') {
+					//	hides the help menu and changes the select and play/pause buttons accordingly
+					tv.menu = 'tv';
+					$('.help-display').addClass('js-hidden');
+					$('.ok').addClass('js-hidden');
+					$('.pause').removeClass('js-hidden');
+				} else {
+					//	sets the scroll id and calls the help scroll method to scroll to the top of the menu
+					this.scrollId = 0;
+					this.scroll();
+					//	shows the help menu and changes the select and play/pause buttons accordingly
+					tv.menu = 'help';
+					$('.help-display').removeClass('js-hidden');
+					$('.ok').removeClass('js-hidden');
+					$('.pause').addClass('js-hidden');
+				}
+			}
+		},
+		guide: {
+			selected: 0,
+			scrollId: 0,
+			toggleGuide: function() {
+				if(tv.menu === 'guide') { 
+					tv.menu = 'tv';
+					$('.guide-display').toggleClass('js-hidden');
+					$('.pause').toggleClass('js-hidden');
+					$('.ok').toggleClass('js-hidden');
+				} else {
+					tv.menu = 'guide';
+					$('.num-display').addClass('js-hidden');
+					$('.guide-display').empty();
+					tv.channels.storedChannels.forEach(function(channel, i) {
+						var divCont = $('<div>');
+						divCont.attr({
+							'class': 'guide-info',
+							'data-chan': i
+						});
+						if(i % 4 == 0) {
+							divCont.attr('id', 'chan-' + i);
+						}
+						
+						var numDiv = $('<div>');
+						numDiv.addClass('guide-data');
+						var j = 0;
+						i < 10 ? j = '0' + i : j = i;
+						numDiv.text('Channel ' + j);
+						
+						var chanDiv = $('<div>');
+						chanDiv.addClass('guide-data');
+						chanDiv.text(channel.toUpperCase());
+						
+						divCont.append(numDiv, chanDiv);
+						$('.guide-display').append(divCont);	
+					});
+					
+					if((tv.channels.storedChannels.length % 4) == 3) {
+						var newDiv1 = $('<div>');
+						newDiv1.addClass('guide-info');
+						newDiv1.attr('data-chan', 'na');
+			
+						$('.guide-display').append(newDiv1);
+					} else if((tv.channels.storedChannels.length % 4) == 2) {
+						var newDiv1 = $('<div>');
+						newDiv1.addClass('guide-info');
+						newDiv1.attr('data-chan', 'na');
+			
+						var newDiv2 = $('<div>');
+						newDiv2.addClass('guide-info');
+						newDiv2.attr('data-chan', 'na');
+			
+						$('.guide-display').append(newDiv1, newDiv2);
+					} else if((tv.channels.storedChannels.length % 4) == 1) {
+						var newDiv1 = $('<div>');
+						newDiv1.addClass('guide-info');
+						newDiv1.attr('data-chan', 'na');
+			
+						var newDiv2 = $('<div>');
+						newDiv2.addClass('guide-info');
+						newDiv2.attr('data-chan', 'na');
+			
+						var newDiv3 = $('<div>'); 
+						newDiv3.addClass('guide-info');
+						newDiv3.attr('data-chan', 'na');
+			
+						$('.guide-display').append(newDiv1, newDiv2, newDiv3);
+					}
+					
+					$('.guide-display').toggleClass('js-hidden');
+					$('.pause').toggleClass('js-hidden');
+					$('.ok').toggleClass('js-hidden');
+					
+					tv.menus.guide.selected = tv.channels.num;
+					tv.menus.guide.scrollId = tv.menus.guide.mod4Floor(tv.menus.guide.selected);
+					tv.menus.guide.highlight();
+					tv.menus.guide.scroll();
+				}
+			},
+			scroll: function() {
+				$('.guide-display').animate({
+					scrollTop: $('.guide-display').scrollTop() + $('#chan-' + this.scrollId).position().top
+				}, 0);
+			},
+			highlight: function() {
+				for(var i = 0; i < tv.channels.storedChannels.length; i++) {
+					if(i == this.selected) {
+						$('[data-chan=' + i + ']').addClass('hovered');
+					} else {
+						$('[data-chan=' + i + ']').removeClass('hovered');
+					}
+				}
+			},
+			mod4Floor: function(number) {
+				return Math.floor(number/4) * 4;
+			}
+		},
 	}
-})
-$('.pause').on('click', function() {
-/*
-	if(info && hover) {
-		$('.full-screen').addClass('js-hidden');
-		info = false;
-		hover = false;
-//		$('.pause').addClass()
-	} else if(!hover) {
-		pausePlay();
-	}
-*/
-	if(chanNum == 0 && favorites.length == 0) {
+}
+var remote = {
+/**************************************************************************************************
+
+											Control Pad
+
+**************************************************************************************************/
+	controlPad: {
+		upClicked: function() {
+			if(tv.menus.info.info && !tv.menus.info.hover) {
+				//	hovers over the back button of the info menu
+				$('.back-btn').addClass('back-btn-hover');
+				tv.menus.info.hover = true;
+			} else if(tv.menus.info.hover) {
+				//	removes hover if already hovering
+				$('.back-btn').removeClass('back-btn-hover');
+				tv.menus.info.hover = false;
+			} else if(tv.menu === 'help') {
+				if(tv.menus.help.scrollId > 0 && !tv.menus.info.hover) {
+					//	decrement the scroll id before calling the scroll (scrolls up)
+					tv.menus.help.scrollId--;
+					tv.menus.help.scroll();
+				} else if(tv.menus.info.hover) {
+					//	removes any remaining hover effects from the info menu
+					$('.back-btn').removeClass('back-btn-hover');
+					tv.menus.info.hover = false;
+				}
+			} else if(tv.menu === 'guide') {
+				tv.menus.guide.selected--;
+				if(tv.menus.guide.selected < 0) {
+					tv.menus.guide.selected = tv.channels.storedChannels.length - 1;
+				}
+				tv.menus.guide.scrollId = tv.menus.guide.mod4Floor(tv.menus.guide.selected);
+				tv.menus.guide.highlight();
+				tv.menus.guide.scroll();
+			} else {
+				//	change channel to the next channel if no other menus are selected
+				tv.channels.num++;
+				tv.channels.logPrevChan();
+				tv.channels.changeChannel();
+			}
+		},
+		downClicked: function() {
+			if(tv.menu === 'info' && !tv.menus.info.hover) {
+				//	hovers over the back button of the info menu
+				$('.back-btn').addClass('back-btn-hover');
+				tv.menus.info.hover = true;
+			} else if(tv.menu === 'info' && tv.menus.info.hover) {
+				//	removes hover if already hovering
+				$('.back-btn').removeClass('back-btn-hover');
+				tv.menus.info.hover = false;
+			} else if(tv.menu === 'help') {
+				if(tv.menus.help.scrollId < 8) {
+					//	increment the scroll id before calling the scroll (scrolls down)
+					tv.menus.help.scrollId++;
+					tv.menus.help.scroll();
+				} else if(!tv.menus.info.hover) {
+					//	hovers the help menu back button
+					$('.back-btn').addClass('back-btn-hover');
+					tv.menus.info.hover = true;
+				}
+			} else if(tv.menu === 'guide') {
+				// scrolls down the guide menu
+				tv.menus.guide.selected++;
+				if(tv.menus.guide.selected > tv.channels.storedChannels.length - 1) {
+					tv.menus.guide.selected = 0;
+				}
+				tv.menus.guide.scrollId = tv.menus.guide.mod4Floor(tv.menus.guide.selected);
+				tv.menus.guide.highlight();
+				tv.menus.guide.scroll();
+			} else {
+				//	change channel to the preceding channel if no other menus are selected
+				tv.channels.num--;
+				tv.channels.logPrevChan();
+				tv.channels.changeChannel();
+			}
+		},
+		leftClicked: function() {
+			if(tv.menus.info.info && !tv.menus.info.hover) {
+				//	hovers over the back button of the info menu
+				$('.back-btn').addClass('back-btn-hover');
+				tv.menus.info.hover = true;
+			} else if(tv.menus.info.hover) {
+				//	removes hover if already hovering
+				$('.back-btn').removeClass('back-btn-hover');
+				tv.menus.info.hover = false;
+			} else if(tv.menu === 'help') {
+				if(tv.menus.help.scrollId > 0 && !tv.menus.info.hover) {
+					//	scrolls twice as fast as the up/down buttons
+					tv.menus.help.scrollId -= 2;
+					//	ensures the scroll Id can't go below 0
+					tv.menus.help.scrollId < 0 ? tv.menus.help.scrollId = 0 : tv.menus.help.scrollId = tv.menus.help.scrollId;
+					tv.menus.help.scroll();
+				} else if(tv.menus.info.hover) {
+					//	hovers the back button of the help menu
+					$('.back-btn').removeClass('back-btn-hover');
+					tv.menus.info.hover = false;
+				}	
+			} else if(tv.menu === 'guide') {
+				if(tv.menus.guide.selected % 4 != 0) {
+					tv.menus.guide.scrollId = tv.menus.guide.mod4Floor(tv.menus.guide.selected);
+					tv.menus.guide.selected = tv.menus.guide.scrollId;
+				} else {
+					tv.menus.guide.scrollId = tv.menus.guide.mod4Floor(tv.menus.guide.selected - 4);
+					tv.menus.guide.selected = tv.menus.guide.scrollId + 3;
+				}
+				if(tv.menus.guide.scrollId < 0) {
+					tv.menus.guide.scrollId = tv.menus.guide.mod4Floor(tv.channels.storedChannels.length - 1);
+					tv.menus.guide.selected = tv.channels.storedChannels.length - 1;
+				}
+				tv.menus.guide.scroll();
+				tv.menus.guide.highlight();
+			} else {
+				//	changes to the preceding gif if no other menu is selected
+				tv.gifs.num--;
+				tv.gifs.changeGif();
+			}
+		},
+		rightClicked: function() {
+			if(tv.menus.info.info && !tv.menus.info.hover) {
+				//	hovers over the back button of the info menu
+				$('.back-btn').addClass('back-btn-hover');
+				hover = true;
+			} else if(tv.menus.info.hover) {
+				//	removes hover if already hovering
+				$('.back-btn').removeClass('back-btn-hover');
+				tv.menus.info.hover = false;
+			} else if(tv.menu === 'help') {
+				if(tv.menus.help.scrollId < 8) {
+					//	scrolls twice as fast as the up/down buttons
+					tv.menus.help.scrollId += 2;
+					//	ensures the scroll Id can't go above the number of help ids
+					tv.menus.help.scrollId > 8 ? tv.menus.help.scrollId = 8 : tv.menus.help.scrollId = tv.menus.help.scrollId;
+					tv.menus.help.scroll();
+				} else if(!tv.menus.info.hover) {
+					//	hovers the back button of the help menu
+					tv.menus.help.scrollId = 7;
+					tv.menus.help.scroll();
+					$('.back-btn').toggleClass('back-btn-hover');
+					tv.menus.info.hover = true;
+				}
+			} else if(tv.menu === 'guide') {
+				if(tv.menus.guide.selected % 4 == 3) {
+					tv.menus.guide.scrollId = tv.menus.guide.mod4Floor(tv.menus.guide.selected + 4);
+					tv.menus.guide.selected = tv.menus.guide.scrollId;
+				} else {
+					tv.menus.guide.scrollId = tv.menus.guide.mod4Floor(tv.menus.guide.selected);
+					tv.menus.guide.selected = tv.menus.guide.scrollId + 3;
+				}
+				if(tv.menus.guide.scrollId > tv.channels.storedChannels.length - 1) {
+					tv.menus.guide.scrollId = 0;
+					tv.menus.guide.selected = 0;
+				}
+				tv.menus.guide.scroll();
+				tv.menus.guide.highlight();
+			} else {
+				//	changes to the next gif if no other menu is selected
+				tv.gifs.num++;
+				tv.gifs.changeGif();
+			}
+		},
+		pausePlayClicked: function() {
+			if(tv.channels.num == 0 && tv.channels.favorites.storedFavorites.length == 0) {
+			//	does nothing if on favorites channel and no favorites selected
 		
-	} else if(menu === 'tv') {
-		pausePlay();
-	}
+			} else if(tv.menu === 'tv') {
+				tv.gifs.pausePlay();
+			}
+		},
+		selectClicked: function() {
+			if(tv.menu === 'info' && tv.menus.info.hover) {
+				tv.menus.info.toggleInfo();
+				tv.menus.info.hover = false;
+			} else if(tv.menu === 'help' && tv.menus.info.hover) {
+				tv.menus.help.toggleHelp();
+				tv.menus.info.hover = false;
+			} else if(tv.menu === 'guide') {
+				tv.channels.num = tv.menus.guide.selected;
+				tv.channels.logPrevChan();
+				tv.channels.changeChannel();
+				tv.menus.guide.toggleGuide();
+			}
+		},
+	},
+/**************************************************************************************************
 
-});
-$('.ok').on('click', function() {
-	if(menu === 'info' && hover) {
-		toggleInfo();
-		hover = false;
-	} else if(menu === 'help' && hover) {
-		toggleHelp();
-		hover = false;
-	}
-});
-$('.add').on('click', function() {
-	if(menu === 'tv') {
-		addShows();
-	}	
-});
-$('.fav').on('click', function() {
-	if(menu === 'tv') {
-		favorite();
-	}
-});
-$('.info').on('click', function() {
-	if(menu === 'tv' || menu === 'info') {
-		toggleInfo();
-	}
-});
-$('.help').on('click', function() {
-	if(menu === 'tv' || menu === 'help') {
-		toggleHelp();
-	}
-})
+											AUX Buttons
 
+**************************************************************************************************/
+	auxButtons: {
+		infoClicked: function() {
+			if(tv.menu === 'tv' || tv.menu === 'info') {
+				tv.menus.info.toggleInfo();
+			}
+		},
+		helpClicked: function() {
+			if(tv.menu === 'tv' || tv.menu === 'help') {
+				tv.menus.help.toggleHelp();
+			}
+		},
+		guideClicked: function() {
+			if(tv.menu === 'tv' || tv.menu === 'guide') {
+				tv.menus.guide.toggleGuide();
+			}
+		},
+		favClicked: function() {
+			if(tv.menu === 'tv') {
+				tv.channels.favorites.favorite();
+			}
+		},
+		addGifsClicked: function() {
+			if(tv.menu === 'tv') {
+					tv.gifs.addGifs();
+			}
+		},
+		addChannelClicked: function() {
+			if(tv.menu === 'tv') {
+				if($('#new-chan').val() == '') {
+					$('#new-chan').focus();
+				} else {
+					tv.channels.addChannel();
+				}
+			}
+		},
+		backClicked: function() {
+			if(tv.menu === 'info') {
+				tv.menus.info.toggleInfo();
+			} else if (tv.menu === 'help') {
+				tv.menus.help.toggleHelp();
+			} else if (tv.menu === 'guide') {
+				tv.menus.guide.toggleGuide();
+			}
+		},
+		lastClicked: function() {
+			if(tv.menu === 'tv') {
+				//	set current channel to the previous channel
+				tv.channels.num = tv.channels.prevChannel[0];
+				//	change the channel to the previous channel
+				tv.channels.changeChannel();
+				//	update the previous channels log
+				tv.channels.logPrevChan();
+			}
+		},
+		randomClicked: function() {
+			if(tv.menu === 'tv') {
+				tv.channels.randomChannel();
+			}
+		}
+	},
+/**************************************************************************************************
 
-$('#submit').on('click', function() {
-	if(menu === 'tv') {
-		addChannel();
+											Number Pad
+
+**************************************************************************************************/
+	numberPad: {
+		numClicked: false,
+		numVal: '',
+		numTimer: null,
+		numDisplayTimer: null,
+		numberClicked: function(number) {
+			//	clears the channel change timer if it exists to prevent the number display from hiding too early if user recently changed channels
+			clearTimeout(tv.channels.chanChangeTimer);
+			//	if this is the first number clicked:
+			if(!this.numClicked) {
+				//	toggle this boolean to keep track of which number the user is currently inputting (first/second)
+				this.numClicked = true;
+				//	build the number value string which will be our new channel number when done inputting
+				this.numVal += number;
+				//	since this is the first number inputted, display it plus a dash while we wait for the second number input
+				$('.num-display').text(this.numVal + '-');
+				$('.num-display').attr('class', 'num-display');
+				//	set a timer that will deliver the single number input to be processed if not interrupted/cleared
+				this.numTimer = setTimeout(function() {
+					remote.numberPad.processNums();
+				}, 1500);
+			//	if this is the second number clicked:
+			} else {
+				//	add the second number to the number value string being built
+				this.numVal += number;
+				//	send both of the numbers input to be processed
+				this.processNums();
+			}
+		},
+		processNums: function() {
+			//	clears/interrupts the number timer if it is still set from the first number input
+			clearTimeout(this.numTimer);
+			//	reset the toggle boolean
+			this.numClicked = false;
+			//	makes sure the inputted number is an actual channel number 
+			if(parseInt(this.numVal) < tv.channels.storedChannels.length) {
+				if(tv.menu === 'tv') {
+				//	sets the channel number to the inputted string (converted to an integer)
+				tv.channels.num = parseInt(this.numVal);
+				//	logs the previous channel
+				tv.channels.logPrevChan();
+				//	change the channel using the updated info
+				tv.channels.changeChannel();
+				//	if the current menu is the guide, change the guide display instead 
+				} else if(tv.menu === 'guide') {
+					clearTimeout(this.numDisplayTimer);
+					tv.menus.guide.selected = parseInt(this.numVal);
+					tv.menus.guide.scrollId = tv.menus.guide.mod4Floor(tv.menus.guide.selected);
+					tv.menus.guide.scroll();
+					tv.menus.guide.highlight();
+					$('.num-display').text(this.numVal);
+					this.numDisplayTimer = setTimeout(function() {
+						$('.num-display').addClass('js-hidden');
+					}, 0);
+				}
+				//	resets the input string
+				this.numVal = '';
+			//	if the inputted channel number is not a channel number:
+			} else {
+				// reset the input string
+				this.numVal = ''
+				//	run changeChannel() without changing the channel (display purposes only) if the menu is set to tv
+				if(tv.menu === 'tv') {
+					tv.channels.changeChannel();
+				}
+			}
+		}
 	}
-});
-$('.guide').click(function() {
-	if(menu === 'tv' || menu === 'guide') {
-		toggleGuide();
+}
+/**************************************************************************************************
+
+											Page Load
+
+**************************************************************************************************/
+$(document).ready( function() {
+//	Sets channels to initial channels if not already stored locally
+	if(!Array.isArray(tv.channels.storedChannels)) {
+		tv.channels.storedChannels = tv.channels.initialChannels;
 	}
-});
-
-
-
-
-$('.number').on('click', function() {
-	if(menu === 'tv') {
-		numberClicked($(this).text());
+//	Sets the limits to initial limits if not already stored locally
+	if(!Array.isArray(tv.channels.storedLimits)) {
+		tv.channels.storedLimits = tv.channels.initialLimits;
+		for(var i = 0; i < tv.channels.storedChannels.length -1; i++) {
+			tv.channels.storedLimits.push(10);
+		}
 	}
-});
-$('.back').on('click', function() {
-	if(menu === 'tv') {
-		chanNum = prevChannel[0];
-		changeChannel();
-		logPrev();
+//	Sets favorites and fav Ids to empty arrays if not already stored locally
+	if(!Array.isArray(tv.channels.favorites.storedFavorites || !Array.isArray(tv.channels.favorites.storedFavIds))) {
+		tv.channels.favorites.storedFavorites = [];
+		tv.channels.favorites.storedFavIds = [];
 	}
-});
-$('.random').on('click', function() {
-	if(menu === 'tv') {
-		randomChan();
-	}
-});
-
-
-
-$(document).on('click', '.back-btn', function() {
+//	Caps the limits allowed to come from local storage at 50 to prevent excessive API calls that will slow down the app
+	tv.channels.storedLimits.forEach(function(limit) {
+		if (limit > 50) {
+			limit = 50;
+		}
+	});
+//	Runs a channel change with the initial variables when the page first loads to initiate 
+	tv.channels.changeChannel();
+//	Set up button click event listeners
+	$('.up').click(remote.controlPad.upClicked);
+	$('.right').click(remote.controlPad.rightClicked);
+	$('.down').click(remote.controlPad.downClicked);
+	$('.left').click(remote.controlPad.leftClicked);
+	$('.pause').click(remote.controlPad.pausePlayClicked);
+	$('.ok').click(remote.controlPad.selectClicked);
+	$('.add').click(remote.auxButtons.addGifsClicked);
+	$('#submit').click(remote.auxButtons.addChannelClicked);
+	$('.fav').click(remote.auxButtons.favClicked);
+	$('.random').click(remote.auxButtons.randomClicked);
+	$('.info').click(remote.auxButtons.infoClicked);
+	$('.help').click(remote.auxButtons.helpClicked);	
+	$('.guide').click(remote.auxButtons.guideClicked);
+	$('.back').click(remote.auxButtons.lastClicked);
+	$('.go-back').click(remote.auxButtons.backClicked);
+	$('.number').click(function() {
+		if(tv.menu === 'tv' || tv.menu === 'guide') {
+			remote.numberPad.numberClicked($(this).text());
+		}
+	});
+	$(document).on('click', '.back-btn', function() {
+		if(tv.menu === 'info') {
+			tv.menus.info.toggleInfo();
+		} else if (tv.menu === 'help') {
+			tv.menus.help.toggleHelp();
+		}
+	});
+	$(document).on('click', '.guide-info', function() {
+		$(this).attr('data-chan') === 'na' ? tv.channels.num = tv.channels.num : tv.channels.num = $(this).attr('data-chan');
+		tv.channels.logPrevChan();
+		tv.channels.changeChannel();
+		tv.menus.guide.toggleGuide();
+	});
+	//	beginning code for switching numPad to letters
 /*
-	$('.full-screen').addClass('js-hidden');
-	info = false;
+	$("#new-chan").focus(function(){
+		$('.number-buttons').toggleClass('js-hidden');
+	});
 */
-	if(menu === 'info') {
-		toggleInfo();
-	} else if (menu === 'help') {
-		toggleHelp();
-	}
-});
-
-$(document).ready(function() {
-
-});
+});	// end of document.ready()
