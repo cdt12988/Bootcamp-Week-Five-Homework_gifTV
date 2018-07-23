@@ -941,6 +941,7 @@ $(document).ready( function() {
 			remote.controlPad.leftClicked();	
 		//	Up Arrow
 		} else if(event.keyCode == 38) {
+			event.preventDefault();
 			remote.controlPad.upClicked();
 		//	Right Arrow
 		} else if(event.keyCode == 39) {

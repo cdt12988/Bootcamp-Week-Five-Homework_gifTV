@@ -15,7 +15,6 @@ html {
 *, *:before, *:after {
 	box-sizing: inherit;
 }
-
 .app-container {
 	display: grid;
 	grid:
