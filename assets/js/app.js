@@ -1,5 +1,10 @@
 var tv = {
 	menu: 'tv',
+/**************************************************************************************************
+
+											  Channels
+
+**************************************************************************************************/	
 	channels: {
 		//	Variables
 		num: 1,				
@@ -95,6 +100,7 @@ var tv = {
 				this.logPrevChan();
 				this.changeChannel();
 			}
+			$('#new-chan').blur();
 		},
 		randomChannel: function() {
 			//	set channel number to a random number between 0 and the number of channels
@@ -145,7 +151,8 @@ var tv = {
 						} else {
 							tv.channels.num = 0;
 							tv.channels.logPrevChan();
-							tv.gifs.num = tv.channels.favorites.storedFavIds.indexOf(response.data[tv.gifs.num]);
+							//	gif.num set to the index number of the current gif id within the favorites array
+							tv.gifs.num = tv.channels.favorites.storedFavIds.indexOf(response.data[tv.gifs.num].id);
 							//	this variable is needed to override the default gif index number of 0 on channel change
 							tv.channels.favorites.fav = true;
 							tv.channels.changeChannel();
@@ -165,6 +172,7 @@ var tv = {
 		state: null,
 		still: null,
 		animate: null,
+		cooldown: false,
 		name: '',
 		rating: '',
 		changeGif: function() {
@@ -239,14 +247,21 @@ var tv = {
 			}
 		},
 		addGifs: function() {
-			//	increase the current channel's limit by 10
-			tv.channels.storedLimits[tv.channels.num] = tv.channels.storedLimits[tv.channels.num] + 10;
-			//	update the user's local storage with the new limits
-			localStorage.setItem('limits', JSON.stringify(tv.channels.storedLimits));
-			//	set the current gif to the first of the newest 10 gifs
-			this.num = tv.channels.storedLimits[tv.channels.num] - 10;
-			//	run the API call with the updated info
-			this.changeGif();
+			if(!this.cooldown) {
+				this.cooldown = true;
+				//	increase the current channel's limit by 10
+				tv.channels.storedLimits[tv.channels.num] = tv.channels.storedLimits[tv.channels.num] + 10;
+				//	update the user's local storage with the new limits
+				localStorage.setItem('limits', JSON.stringify(tv.channels.storedLimits));
+				//	set the current gif to the first of the newest 10 gifs
+				this.num = tv.channels.storedLimits[tv.channels.num] - 10;
+				//	run the API call with the updated info
+				this.changeGif();
+				//	sets a 3 second cooldown before this method can be called again to prevent excessive API calls
+				setTimeout(function() {
+					this.cooldown = false;
+				}, 3000);
+			}
 		},
 		pausePlay: function() {
 			//	toggles between the 'animate'/'still' state and changes the gif image and play/pause button accordingly
@@ -267,6 +282,9 @@ var tv = {
 
 **************************************************************************************************/
 	menus: {
+/***********************************************
+					INFO
+***********************************************/
 		info: {
 			info: false,
 			hover: false,
@@ -334,6 +352,9 @@ var tv = {
 				}
 			}
 		},
+/***********************************************
+					HELP
+***********************************************/
 		help: {
 			scrollId: 0,
 			scroll: function() {
@@ -363,31 +384,38 @@ var tv = {
 				}
 			}
 		},
+/***********************************************
+					GUIDE
+***********************************************/
 		guide: {
 			selected: 0,
 			scrollId: 0,
 			toggleGuide: function() {
-				if(tv.menu === 'guide') { 
+				if(tv.menu === 'guide') {
 					tv.menu = 'tv';
-					$('.guide-display').toggleClass('js-hidden');
-					$('.pause').toggleClass('js-hidden');
-					$('.ok').toggleClass('js-hidden');
+					//	toggle guide displays off
+					$('.guide-display').addClass('js-hidden');
+					$('.ok').addClass('js-hidden');
+					$('.pause').removeClass('js-hidden');
 				} else {
 					tv.menu = 'guide';
 					$('.num-display').addClass('js-hidden');
 					$('.guide-display').empty();
+					
+					//	dynamically creates the guide contents based on the current channels
 					tv.channels.storedChannels.forEach(function(channel, i) {
 						var divCont = $('<div>');
 						divCont.attr({
 							'class': 'guide-info',
 							'data-chan': i
 						});
+						//	gives an id to every 4th div container for scrolling purposes
 						if(i % 4 == 0) {
 							divCont.attr('id', 'chan-' + i);
 						}
-						
 						var numDiv = $('<div>');
 						numDiv.addClass('guide-data');
+						//	prepend a '0' to the channel number if less than 10
 						var j = 0;
 						i < 10 ? j = '0' + i : j = i;
 						numDiv.text('Channel ' + j);
@@ -400,42 +428,46 @@ var tv = {
 						$('.guide-display').append(divCont);	
 					});
 					
+					//	fills in the rest of the page with either 1, 2 or 3 empty placeholder divs depending on the modulo remainder (4 divs per guide page)
 					if((tv.channels.storedChannels.length % 4) == 3) {
 						var newDiv1 = $('<div>');
-						newDiv1.addClass('guide-info');
-						newDiv1.attr('data-chan', 'na');
+						newDiv1.addClass('empty-info');
+//						newDiv1.attr('data-chan', 'na');
 			
 						$('.guide-display').append(newDiv1);
 					} else if((tv.channels.storedChannels.length % 4) == 2) {
 						var newDiv1 = $('<div>');
-						newDiv1.addClass('guide-info');
-						newDiv1.attr('data-chan', 'na');
+						newDiv1.addClass('empty-info');
+//						newDiv1.attr('data-chan', 'na');
 			
 						var newDiv2 = $('<div>');
-						newDiv2.addClass('guide-info');
-						newDiv2.attr('data-chan', 'na');
+						newDiv2.addClass('empty-info');
+//						newDiv2.attr('data-chan', 'na');
 			
 						$('.guide-display').append(newDiv1, newDiv2);
 					} else if((tv.channels.storedChannels.length % 4) == 1) {
 						var newDiv1 = $('<div>');
-						newDiv1.addClass('guide-info');
-						newDiv1.attr('data-chan', 'na');
+						newDiv1.addClass('empty-info');
+//						newDiv1.attr('data-chan', 'na');
 			
 						var newDiv2 = $('<div>');
-						newDiv2.addClass('guide-info');
-						newDiv2.attr('data-chan', 'na');
+						newDiv2.addClass('empty-info');
+//						newDiv2.attr('data-chan', 'na');
 			
 						var newDiv3 = $('<div>'); 
-						newDiv3.addClass('guide-info');
-						newDiv3.attr('data-chan', 'na');
+						newDiv3.addClass('empty-info');
+//						newDiv3.attr('data-chan', 'na');
 			
 						$('.guide-display').append(newDiv1, newDiv2, newDiv3);
 					}
 					
-					$('.guide-display').toggleClass('js-hidden');
-					$('.pause').toggleClass('js-hidden');
-					$('.ok').toggleClass('js-hidden');
+					//	toggle guide displays on
+					$('.guide-display').removeClass('js-hidden');
+					$('.ok').removeClass('js-hidden');
+					$('.pause').addClass('js-hidden');
 					
+					//	set the initial selected channel to be highlighted and use the mod4Floor formula to scroll to the nearest
+					//	preceding guide page top
 					tv.menus.guide.selected = tv.channels.num;
 					tv.menus.guide.scrollId = tv.menus.guide.mod4Floor(tv.menus.guide.selected);
 					tv.menus.guide.highlight();
@@ -443,11 +475,13 @@ var tv = {
 				}
 			},
 			scroll: function() {
+				//	scrolls to the chan-id that equals the scrollId (set before calling the method)
 				$('.guide-display').animate({
 					scrollTop: $('.guide-display').scrollTop() + $('#chan-' + this.scrollId).position().top
 				}, 0);
 			},
 			highlight: function() {
+				//	loops through all channels and adds the .hovered class to the currently selected channel (removes it from the rest)
 				for(var i = 0; i < tv.channels.storedChannels.length; i++) {
 					if(i == this.selected) {
 						$('[data-chan=' + i + ']').addClass('hovered');
@@ -457,6 +491,11 @@ var tv = {
 				}
 			},
 			mod4Floor: function(number) {
+				//	takes the given number (usually the currently selected guide-menu channel) and returns the nearest preceding multiple of 4
+				//	used to scroll to the top of each 4-div guide page
+				//	probably could have just used the tv.menus.guide.selected property instead of passing through an argument each time
+				//	but I've gone too far now!
+				//	this one line of code for this method now has 5 lines of comments...
 				return Math.floor(number/4) * 4;
 			}
 		},
@@ -559,18 +598,24 @@ var remote = {
 					$('.back-btn').removeClass('back-btn-hover');
 					tv.menus.info.hover = false;
 				}	
-			} else if(tv.menu === 'guide') {
+			} else if(tv.menu === 'guide') {				
 				if(tv.menus.guide.selected % 4 != 0) {
+					//	if the currently selected channel is not already at the top, then assign the scrollId to the top of the current guide page
+					//	and the selected item to the top of the current guide page also
 					tv.menus.guide.scrollId = tv.menus.guide.mod4Floor(tv.menus.guide.selected);
 					tv.menus.guide.selected = tv.menus.guide.scrollId;
 				} else {
+					//	if the currently selected channel IS already at the top, then assign the scrollId to the top of the previous guide page
+					//	and the selected channel to the bottom of that guide page
 					tv.menus.guide.scrollId = tv.menus.guide.mod4Floor(tv.menus.guide.selected - 4);
 					tv.menus.guide.selected = tv.menus.guide.scrollId + 3;
 				}
 				if(tv.menus.guide.scrollId < 0) {
+					//	resets to the last guide page/channel when user goes below channel 0
 					tv.menus.guide.scrollId = tv.menus.guide.mod4Floor(tv.channels.storedChannels.length - 1);
 					tv.menus.guide.selected = tv.channels.storedChannels.length - 1;
 				}
+				//	calls the scroll and highlight methods with the now assigned scrollId and selected properties
 				tv.menus.guide.scroll();
 				tv.menus.guide.highlight();
 			} else {
@@ -604,16 +649,22 @@ var remote = {
 				}
 			} else if(tv.menu === 'guide') {
 				if(tv.menus.guide.selected % 4 == 3) {
+					//	if the currently selected channel is at the bottom of the guide page, then assign the scrollId to the top of the next guide page
+					//	and the selected item to the top of the next guide page also
 					tv.menus.guide.scrollId = tv.menus.guide.mod4Floor(tv.menus.guide.selected + 4);
 					tv.menus.guide.selected = tv.menus.guide.scrollId;
 				} else {
+					//	if the currently selected channel is NOT already at the bottom, then assign the scrollId to the top of the current guide page
+					//	and the selected channel to the bottom of the current guide page
 					tv.menus.guide.scrollId = tv.menus.guide.mod4Floor(tv.menus.guide.selected);
 					tv.menus.guide.selected = tv.menus.guide.scrollId + 3;
 				}
 				if(tv.menus.guide.scrollId > tv.channels.storedChannels.length - 1) {
+					//	resets to the first guide page/channel when user goes past the last channel
 					tv.menus.guide.scrollId = 0;
 					tv.menus.guide.selected = 0;
 				}
+				//	calls the scroll and highlight methods with the now assigned scrollId and selected properties
 				tv.menus.guide.scroll();
 				tv.menus.guide.highlight();
 			} else {
@@ -678,11 +729,15 @@ var remote = {
 		},
 		addChannelClicked: function() {
 			if(tv.menu === 'tv') {
-				if($('#new-chan').val() == '') {
+				if($('#new-chan').val() == '' && !($('#new-chan').is(':focus'))) {
 					$('#new-chan').focus();
+				} else if($('#new-chan').val() == '' && ($('#new-chan').is(':focus'))) {
+					$('#new-chan').blur();
 				} else {
 					tv.channels.addChannel();
 				}
+			} else {
+				$('#new-chan').val('');
 			}
 		},
 		backClicked: function() {
@@ -692,6 +747,8 @@ var remote = {
 				tv.menus.help.toggleHelp();
 			} else if (tv.menu === 'guide') {
 				tv.menus.guide.toggleGuide();
+			} else if (tv.menu === 'tv') {
+				$('#new-chan').blur();
 			}
 		},
 		lastClicked: function() {
@@ -776,9 +833,15 @@ var remote = {
 			} else {
 				// reset the input string
 				this.numVal = ''
-				//	run changeChannel() without changing the channel (display purposes only) if the menu is set to tv
+				//	run changeChannel() without changing the channel (display purposes only)
 				if(tv.menu === 'tv') {
 					tv.channels.changeChannel();
+				} else if(tv.menu === 'guide') {
+					$('.num-display').addClass('js-hidden');
+					tv.menus.guide.selected = tv.channels.storedChannels.length - 1;
+					tv.menus.guide.scrollId = tv.menus.guide.mod4Floor(tv.menus.guide.selected);
+					tv.menus.guide.scroll();
+					tv.menus.guide.highlight();
 				}
 			}
 		}
@@ -848,10 +911,63 @@ $(document).ready( function() {
 		tv.channels.changeChannel();
 		tv.menus.guide.toggleGuide();
 	});
-	//	beginning code for switching numPad to letters
+	
+//	Set up key up event listeners
+	document.onkeyup = function(event) {
+		//	Number Pressed
+		if(/^[0-9]+$/.test(event.key) && !($('#new-chan').is(':focus'))) {
+			remote.numberPad.numberClicked(event.key);
+			
+		//	Letter Pressed
+		} else if(/^[a-z]+$/.test(event.key) && !($('#new-chan').is(':focus'))) {
+			if(event.key == 'p') {
+				remote.controlPad.pausePlayClicked();
+			} else if(event.key == 'g') {
+				remote.auxButtons.guideClicked();
+			} else if(event.key == 'f') {
+				remote.auxButtons.favClicked();
+			} else if(event.key == 'i') {
+				remote.auxButtons.infoClicked();
+			} else if(event.key == 'h') {
+				remote.auxButtons.helpClicked();
+			} else if (event.key == 'b') {
+				remote.auxButtons.lastClicked();
+			} else if (event.key == 'r') {
+				remote.auxButtons.randomClicked();
+			}
+			
+		//	Left Arrow
+		} else if(event.keyCode == 37) {
+			remote.controlPad.leftClicked();	
+		//	Up Arrow
+		} else if(event.keyCode == 38) {
+			remote.controlPad.upClicked();
+		//	Right Arrow
+		} else if(event.keyCode == 39) {
+			remote.controlPad.rightClicked();
+		//	Down Arrow
+		} else if(event.keyCode == 40) {
+			remote.controlPad.downClicked();
+		//	Enter/Return
+		} else if(event.keyCode == 13) {
+			if(tv.menu == 'tv') {
+				remote.auxButtons.addChannelClicked();
+			} else {
+				remote.controlPad.selectClicked();
+			}
+		//	ESC 
+		} else if(event.keyCode == 27) {
+			remote.auxButtons.backClicked();
+		//	+ Sign
+		} else if(event.shiftKey && event.keyCode == 187) {
+			remote.auxButtons.addGifsClicked();
+		}
+	}
+//	beginning code for switching numPad to letters
 /*
 	$("#new-chan").focus(function(){
+		console.log($('#new-chan').is(':focus'));
 		$('.number-buttons').toggleClass('js-hidden');
 	});
 */
-});	// end of document.ready()
+});		// end of document.ready()
