@@ -911,6 +911,11 @@ $(document).ready( function() {
 		tv.channels.changeChannel();
 		tv.menus.guide.toggleGuide();
 	});
+	$('#num-toggle').click(function() {
+		$('.control-buttons').toggleClass('js-hidden');
+		$('.input-container').toggleClass('js-hidden');
+		$('.number-buttons').toggleClass('show-nums');
+	});
 	
 //	Set up key up event listeners
 	document.onkeyup = function(event) {
