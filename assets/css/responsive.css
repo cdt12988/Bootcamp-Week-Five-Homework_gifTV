@@ -1,0 +1,274 @@
+.channel-display,
+.guide-info {
+	text-align: center;
+}
+.full-screen {
+	padding: 0 2.5%;
+}
+.input,
+.input:focus {
+	padding-right: 0px;
+}
+body {
+	width: 100vw;
+	height: 100vh;
+}
+.app-container,
+.tv-container,
+.remote-container {
+	max-width: 100%;
+	max-height: 100%;
+}
+#num-toggle {
+	display: none;
+}
+@media only screen and (max-width: 960px) {
+	
+	.tv-container {
+		background-image: none;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+	.tv {
+		width: 420px;
+		height: 280px;
+	}
+
+
+
+
+	.remote,
+	.remote:before {
+		width: 210px;
+		width: 210px;
+		height: 483px;
+	}
+	.input {
+		height: 35px;
+		font-size: 1em;
+	}
+	#submit {
+		font-size: 0.75em;
+	}
+	#go-back {
+		width: 43px;
+		height: 33px;
+		font-size: 0.75em;
+	}
+	.btn {
+		font-size: 1.5em;
+	}
+	.sm {
+		width: 40px;
+		height: 40px;
+	}
+	.long {
+		width: 68px;
+		height: 40px;
+	}
+	.tall 	{
+		width: 40px;
+		height: 68px;
+	}
+	.lg {
+		width: 68px;
+		height: 68px;
+		font-size: 2.5em;
+	}
+	.xlong {
+		width: 83px;
+		height: 33px;
+		font-size: 1em;
+	}
+	.ok {
+		font-size: 1.4em;
+	}
+	.sq {
+		width: 33px;
+		height: 33px;
+	}
+}
+
+
+
+
+@media only screen and (max-width: 440px) {
+	.app-container {
+		background-image: url('../images/bg2.jpg');
+		z-index: -10;
+		display: grid;
+		grid:
+			"tv" auto
+			"remote" auto
+			/ 100vw;
+	}	
+	.tv-container {
+		background-image: none;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		max-height: 230px;
+	}
+	.tv {
+		width: 300px;
+		height: 200px;
+		position: relative;
+	}
+
+	.tv:before,
+	.tv:after {
+		z-index: -1;
+		position: absolute;
+		content: "";
+		bottom: 15px;
+		left: 10px;
+		width: 50%;
+		top: 80%;
+		max-width:300px;
+		background: #777;
+		-webkit-box-shadow: 0 15px 10px #777;
+		-moz-box-shadow: 0 15px 10px #777;
+		box-shadow: 0 15px 10px #777;
+		-webkit-transform: rotate(-3deg);
+		-moz-transform: rotate(-3deg);
+		-o-transform: rotate(-3deg);
+		-ms-transform: rotate(-3deg);
+		transform: rotate(-3deg);
+}
+	.tv:after {
+		-webkit-transform: rotate(3deg);
+		-moz-transform: rotate(3deg);
+		-o-transform: rotate(3deg);
+		-ms-transform: rotate(3deg);
+		transform: rotate(3deg);
+		right: 10px;
+		left: auto;
+}
+	.channel-display,
+	.num-display {
+		font-size: 1.25em;
+	}
+	.fav-display {
+		font-size: 1.75em;
+	}
+	.full-screen p,
+	.back-btn {
+		font-size: 0.75em;
+		margin: 0.25em 0 0.75em 0;
+		overflow: none;
+	}
+	.back-btn {
+		margin: 0 auto;
+	}
+	.help-display {
+		padding: 1em;
+		line-height: 1.4;
+		font-size: 0.75em;
+	}
+	.help-display h2 {
+		font-size: 1.5em;
+		margin: 0.25em auto;
+	}
+	.help-display h3 {
+		font-size: 1.1em;
+		margin: 0.25em auto;
+	}
+	.help-display p {
+		font-size: 0.8em;
+		margin: 0.25em atuo;
+	}
+	.help-display span {
+		margin: 0.25em auto;
+	}
+	.help-display dt {
+		font-size: 1em;
+		margin: 0.25em auto;
+	}
+	.help-display dd {
+		font-size: 0.8em;
+		margin: 0.25em auto;
+		margin-left: 1.25em;
+	}
+	.guide-info {
+		font-size: 0.75em;
+	}
+
+
+
+
+	.remote-container {
+		background-image: none;
+//		position: relative;
+	}
+	.buttons-container {
+		grid:
+			"top" 67%
+			"mid" 33%
+			"bot" 0%
+			/ 100%;
+//		position: relative;
+	}
+	.remote,
+	.remote:before {
+		margin: 15px auto;
+		height: 290px;
+//		position: relative;
+	}
+	.remote:before {
+		height: 277px;
+	}
+	#num-toggle {
+		display: block;
+		cursor: pointer;
+
+		color: rgba(255, 255, 255, 0.75);
+		text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.75);
+		font-size: 3em;
+		
+		position: absolute;
+		right: 2.5%;
+//		top: 42.5%;
+		top: 475px;
+	}
+	#num-toggle:hover {
+		color: rgba(255, 255, 255, 0.9);
+		text-shadow: 2px 2px 10px black;
+	}
+	.number-buttons {
+		grid-row: 1 / 3;
+		grid-collumn: 1 / 2;
+		display: none;
+		height: 0%:
+	}
+	.show-nums {
+		display: grid;
+		height: 100%;
+		padding: 20% 10%;
+		border: 1px solid white;
+		border-radius: 3em;
+	}
+	.input-container {
+		grid:
+			"input" 50%
+			"submit" 50%
+			/ 100%;
+	}
+	#submit {
+		bottom: 21.5%;
+	}
+	#go-back {
+		bottom: 7%;
+		left: 9.25%;
+		width: 39px;
+		height: 30px;
+	}
+	#guide {
+		margin-bottom: 2.5%;
+	}
+	.xlong {
+		width: 75px;
+		height: 30px;
+	}
+}
