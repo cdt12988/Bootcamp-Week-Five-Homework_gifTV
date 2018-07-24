@@ -1,6 +1,6 @@
 # gifTV
 
-https://cdt12988.github.io/gifTV/
+Link to gifTV app: https://cdt12988.github.io/gifTV/
 
 Welcome to gifTV!  This app allows the user to surf through various gifTV channels and view related gifs using an accompanying remote much like you would sitting on your couch 
 
@@ -138,7 +138,7 @@ The favorite button will add the current gif to the Favorites channel.  If the g
 
 The help button toggles the Help Menu on/off of the gifTV screen.  See the Help Menu section above for more information about the Help Menu.
 
-#####Add Gif Button (+)
+##### Add Gif Button (+)
 
 The add gif button adds 10 new gifs to the current channel and changes the current gif to the first of these 10 newly added ones.  See the Adding Gifs section above for more information about adding gifs.
 
