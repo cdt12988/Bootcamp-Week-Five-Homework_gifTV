@@ -8,6 +8,8 @@ at home! It also has some extra little features such as adding gifs to your own 
 
 Read below to learn more about the app, its features and development notes.  (There's also an in-app help menu if you need help while in the app itself.)
 
+![Screenshot](https://cdt12988.github.io/images/portfolio/giftv.PNG "gifTV Screenshot")
+
 ## App Features
 
 ### gifTV
@@ -172,7 +174,7 @@ While in the auxiliary menus (Info, Help and Guide), the mouse can be used to sc
 
 ## Development Notes
 
-### Languages Used
+### Developer's Toolkit
 
 This app uses HTML5, CSS3, and JavaScript (with jQuery), with emphases on JSON formatting and Ajax API calls.
 
