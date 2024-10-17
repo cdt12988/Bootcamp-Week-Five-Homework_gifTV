@@ -1,6 +1,6 @@
 # gifTV
 
-Link to gifTV app: [https://cdt12988.github.io/gifTV/](https://cdt12988.github.io/gifTV "gifTV")
+Link to gifTV app: [https://cdt12988.github.io/gifTV/](https://cdt12988.github.io/Bootcamp-Week-Five-Homeworkd_gifTV "gifTV")
 
 Welcome to gifTV!  This app allows the user to surf through various gifTV channels and view related gifs using an accompanying remote much like you would sitting on your couch 
 
